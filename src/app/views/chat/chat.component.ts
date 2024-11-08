@@ -43,14 +43,16 @@ export class ChatComponent implements OnInit {
         func: 'llm-state',
       });
 
-      if (response.llama.loaded && response.model.loaded) {
+      if (response && response.llama.loaded && response.model.loaded) {
         this.loadChatSession();
       } else {
+        console.log('NGONINTI ERROR RESPONSE: ', response);
         this.errorMessage = this.translateService.instant(
           'COMMON.MODEL_NOT_LOADED'
         );
       }
     } catch (error) {
+      console.log('NGONINIT ERROR: ', error);
       this.errorMessage = this.translateService.instant('COMMON.ERROR');
     }
   }
@@ -60,9 +62,15 @@ export class ChatComponent implements OnInit {
       const response = await (window as any).electronAPI.runNodeCode({
         func: 'create-chat-session',
       });
-      this.chatLoaded = response.chatSession.loaded;
+
+      if (response && response.chatSession)
+        this.chatLoaded = response.chatSession.loaded;
+      else {
+        console.log('LOAD CHAT SESSION ERROR RESPONSE: ', response);
+        this.errorMessage = this.translateService.instant('COMMON.ERROR');
+      }
     } catch (error) {
-      console.log(error);
+      console.log('LOAD CHAT SESSION ERROR: ', error);
       this.errorMessage = this.translateService.instant('COMMON.ERROR');
       this.chatLoaded = false;
     }
