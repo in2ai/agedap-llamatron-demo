@@ -23,6 +23,7 @@ export class ChatComponent implements OnInit {
   public headerHeight: number =
     document.getElementById('header')?.offsetHeight || 0;
   public chatLoaded: boolean = false;
+  public generatingResponse: boolean = false;
   public errorMessage?: string;
   public form!: FormGroup;
   public messages: Message[] = [];
@@ -51,6 +52,18 @@ export class ChatComponent implements OnInit {
           'COMMON.MODEL_NOT_LOADED'
         );
       }
+
+      (window as any).electronAPI.onPartialResponse((event: any, data: any) => {
+        if (data.func === 'partial-response') {
+          this.messages = data.chatSession.simplifiedChat;
+          this.changeDetector.detectChanges();
+          this.chat.nativeElement.scrollTop =
+            this.chat.nativeElement.scrollHeight;
+        } else if (data.func === 'stop-generating-response') {
+          this.generatingResponse = false;
+          this.form.get('message')?.enable();
+        }
+      });
     } catch (error) {
       console.log('NGONINIT ERROR: ', error);
       this.errorMessage = this.translateService.instant('COMMON.ERROR');
@@ -80,17 +93,32 @@ export class ChatComponent implements OnInit {
     const message = this.form.get('message')?.value;
     this.form.get('message')?.setValue('');
     if (!message) return;
+    this.form.get('message')?.disable();
     this.messages.push({ type: 'user', message });
     this.chat.nativeElement.scrollTop = this.chat.nativeElement.scrollHeight;
 
     try {
+      this.generatingResponse = true;
       const response = await (window as any).electronAPI.runNodeCode({
-        func: 'send-message',
+        func: 'send-message-stream',
         message: message,
       });
       this.messages = response.chatSession.simplifiedChat;
       this.changeDetector.detectChanges();
       this.chat.nativeElement.scrollTop = this.chat.nativeElement.scrollHeight;
+    } catch (error) {
+      console.log(error);
+    } finally {
+      this.generatingResponse = false;
+      this.form.get('message')?.enable();
+    }
+  }
+
+  async stopGeneratingResponse() {
+    try {
+      await (window as any).electronAPI.runNodeCode({
+        func: 'stop-generating-response',
+      });
     } catch (error) {
       console.log(error);
     }

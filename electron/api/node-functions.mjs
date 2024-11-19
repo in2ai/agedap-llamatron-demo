@@ -7,13 +7,14 @@ export function handleRunNodeCode() {
     const { func } = data;
 
     switch (func) {
-      case "test":
+      case "test": {
         event.sender.send("node-code-response", {
           func: "test",
           message: "Función test ejecutada",
         });
         break;
-      case "select-model":
+      }
+      case "select-model": {
         const dialogResult = await dialog.showOpenDialog({
           properties: ["openFile"],
           filters: [{ name: "Model", extensions: ["gguf"] }],
@@ -27,8 +28,8 @@ export function handleRunNodeCode() {
           });
         }
         break;
-
-      case "load-llama":
+      }
+      case "load-llama": {
         try {
           console.log("Cargando Llama...");
           await llmFunctions.loadLlama();
@@ -45,7 +46,8 @@ export function handleRunNodeCode() {
           );
         }
         break;
-      case "load-model":
+      }
+      case "load-model": {
         const { path } = data;
         try {
           console.log("Cargando modelo...");
@@ -63,7 +65,8 @@ export function handleRunNodeCode() {
           );
         }
         break;
-      case "create-chat-session":
+      }
+      case "create-chat-session": {
         try {
           console.log("Creando sesión de chat...");
           await llmFunctions.createContext();
@@ -82,7 +85,8 @@ export function handleRunNodeCode() {
           );
         }
         break;
-      case "send-message":
+      }
+      case "send-message": {
         const { message } = data;
         try {
           console.log("Enviando mensaje...");
@@ -100,14 +104,56 @@ export function handleRunNodeCode() {
           );
         }
         break;
-      case "llm-state":
+      }
+      case "send-message-stream": {
+        const { message } = data;
+        try {
+          console.log("Enviando mensaje...");
+          const res = await llmFunctions.chatSession.prompt(message, (data) => {
+            event.sender.send("partial-response", data);
+          });
+          console.log("Mensaje enviado correctamente: ", res);
+
+          event.sender.send("node-code-response", {
+            func: "send-message",
+            ...llmState.state,
+          });
+        } catch (error) {
+          event.sender.send(
+            "node-code-response",
+            `Error al enviar mensaje: ${error.message}`
+          );
+        }
+        break;
+      }
+      case "stop-generating-response": {
+        try {
+          console.log("Deteniendo generación de respuesta...");
+          llmFunctions.chatSession.stopActivePrompt();
+          console.log("Generación de respuesta detenida correctamente");
+
+          event.sender.send("node-code-response", {
+            func: "stop-generating-response",
+            ...llmState.state,
+          });
+        } catch (error) {
+          event.sender.send(
+            "node-code-response",
+            `Error al detener generación de respuesta: ${error.message}`
+          );
+        }
+        break;
+      }
+      case "llm-state": {
         event.sender.send("node-code-response", {
           func: "llm-state",
           ...llmState.state,
         });
         break;
-      default:
+      }
+      default: {
         event.sender.send("node-code-response", "Función no encontrada");
+      }
     }
   });
 }

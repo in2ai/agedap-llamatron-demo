@@ -283,7 +283,7 @@ export const llmFunctions = {
       });
     },
 
-    async prompt(message) {
+    async prompt(message, progressCallback) {
       await withLock(llmFunctions, "chatSession", async () => {
         if (chatSession == null) throw new Error("Chat session not loaded");
 
@@ -310,6 +310,23 @@ export const llmFunctions = {
         await chatSession.prompt(message, {
           signal: promptAbortController.signal,
           stopOnAbortSignal: true,
+          //maxTokens: 200,
+          repeatPenalty: {
+            lastTokens: 24,
+            penalty: 1.12,
+            penalizeNewLine: true,
+            frequencyPenalty: 0.02,
+            presencePenalty: 0.02,
+            punishTokensFilter(tokens) {
+              return tokens.filter((token) => {
+                const text = model.detokenize([token]);
+
+                // allow the model to repeat tokens
+                // that contain the word "better"
+                return !text.toLowerCase().includes("better");
+              });
+            },
+          },
           onTextChunk(chunk) {
             inProgressResponse += chunk;
 
@@ -320,6 +337,13 @@ export const llmFunctions = {
                 simplifiedChat: getSimplifiedChatHistory(true, message),
               },
             };
+
+            if (progressCallback) {
+              progressCallback({
+                func: "partial-response",
+                chatSession: llmState.state.chatSession,
+              });
+            }
           },
         });
         llmState.state = {

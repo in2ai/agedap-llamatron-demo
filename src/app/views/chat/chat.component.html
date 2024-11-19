@@ -48,11 +48,21 @@
       formControlName="message"
     />
     <p-button
+      *ngIf="!generatingResponse"
       type="submit"
       label="Enviar"
       class="p-button-primary rounded-full"
       icon="pi pi-send"
       size="small"
+    ></p-button>
+    <p-button
+      *ngIf="generatingResponse"
+      label="Parar"
+      class="p-button-primary rounded-full"
+      icon="pi pi-stop"
+      size="small"
+      loading="true"
+      (click)="stopGeneratingResponse()"
     ></p-button>
   </form>
 </div>

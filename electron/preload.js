@@ -12,4 +12,5 @@ contextBridge.exposeInMainWorld("electronAPI", {
   },
   onNodeCodeResponse: (callback) =>
     ipcRenderer.on("node-code-response", callback),
+  onPartialResponse: (callback) => ipcRenderer.on("partial-response", callback),
 });
