@@ -20,7 +20,7 @@
       class="flex w-full mb-2"
     >
       <div
-        class="max-w-xs p-3 border rounded-lg"
+        class="max-w-[80%] p-3 border rounded-lg"
         [ngClass]="{
           'bg-green-500 text-white': message.type === 'user',
           'bg-gray-300 text-black': message.type === 'model',
@@ -28,7 +28,7 @@
           'rounded-bl-none': message.type === 'model'
         }"
       >
-        <span class="text-sm block">{{ message.message }}</span>
+        <markdown [data]="message.message" class="text-sm block"></markdown>
         <small class="text-xs block mt-1 italic text-right opacity-75">{{
           message.type
         }}</small>

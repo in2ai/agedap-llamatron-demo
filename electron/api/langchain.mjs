@@ -14,26 +14,31 @@ export const loadModel = async (path) => {
   modelPath = path;
   model = await ChatLlamaCpp.initialize({
     modelPath: modelPath,
+    contextSize: 1024,
   });
 };
 
 const promptTemplate = ChatPromptTemplate.fromMessages([
-  ["system", "You are a helpful assistant."],
+  ["system", "You are a helpful assistant. You can use markdown."],
   ["placeholder", "{messages}"],
 ]);
 
 const callModel = async (state) => {
-  if (model === null) {
-    throw new Error("Model not loaded");
-  }
+  try {
+    if (model === null) {
+      throw new Error("Model not loaded");
+    }
 
-  if (model._context.sequencesLeft === 0) {
-    model._context = await model._model.createContext();
-  }
+    if (model._context.sequencesLeft === 0) {
+      model._context = await model._model.createContext({ contextSize: 1024 });
+    }
 
-  const prompt = await promptTemplate.invoke(state);
-  const response = await model.invoke(prompt);
-  return { messages: [response] };
+    const prompt = await promptTemplate.invoke(state);
+    const response = await model.invoke(prompt);
+    return { messages: [response] };
+  } catch (error) {
+    return { messages: [{ type: "system", text: error.toString() }] };
+  }
 };
 
 const workflow = new StateGraph(MessagesAnnotation)
