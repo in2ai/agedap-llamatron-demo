@@ -2,6 +2,7 @@ import { ipcMain } from "electron";
 import { llmFunctions, llmState } from "./llama.mjs";
 import { dialog } from "electron";
 import { app, loadModel, modelPath } from "./langchain.mjs";
+import { HumanMessage } from "@langchain/core/messages";
 
 export function handleRunNodeCode() {
   ipcMain.on("run-node-code", async (event, data) => {
@@ -183,8 +184,9 @@ export function handleRunNodeCode() {
             modelPath,
           });
         }
+        break;
       }
-      case "send_message_stream": {
+      case "send_message": {
         const { message, id } = data;
         const input = {
           messages: [
@@ -195,15 +197,28 @@ export function handleRunNodeCode() {
           ],
         };
         const config = { configurable: { thread_id: id } };
-        //const output = await app.invoke(input, config);
-        //streaming
-        /*app.streamEvents(input, config).on("data", (chunk) => {
-          console.log(chunk);
-        });*/
-        for await (const chunk of await app.stream(input, config)) {
-          console.log(chunk);
-        }
-        //console.log(output.messages[output.messages.length - 1]);
+        const response = await app.invoke(input, config);
+
+        let messages = [];
+        response.messages.forEach((msg) => {
+          if (msg instanceof HumanMessage) {
+            messages.push({
+              type: "user",
+              message: msg.content,
+            });
+          } else {
+            messages.push({
+              type: "model",
+              message: msg.content,
+            });
+          }
+        });
+
+        event.sender.send("node-code-response", {
+          func: "send_message",
+          messages,
+        });
+        break;
       }
       default: {
         event.sender.send("node-code-response", "Función no encontrada");

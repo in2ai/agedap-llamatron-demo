@@ -14,7 +14,6 @@ export const loadModel = async (path) => {
   modelPath = path;
   model = await ChatLlamaCpp.initialize({
     modelPath: modelPath,
-    contextSize: 2048,
   });
 };
 
@@ -29,40 +28,12 @@ const callModel = async (state) => {
   }
 
   if (model._context.sequencesLeft === 0) {
-    model._context = await model._model.createContext({
-      contextSize: 2048,
-    });
+    model._context = await model._model.createContext();
   }
 
   const prompt = await promptTemplate.invoke(state);
   const response = await model.invoke(prompt);
   return { messages: [response] };
-};
-
-const callModelWithStreaming = async (state) => {
-  if (model === null) {
-    throw new Error("Model not loaded");
-  }
-
-  if (model._context.sequencesLeft === 0) {
-    model._context = await model._model.createContext({
-      contextSize: 2048,
-    });
-  }
-
-  const prompt = await promptTemplate.invoke(state);
-
-  // Usar el método de streaming
-  const stream = await model.stream(prompt);
-
-  // Recoger y devolver el resultado del stream
-  const messages = [];
-  for await (const chunk of stream) {
-    console.log(chunk.content); // Mostrar cada fragmento de respuesta
-    messages.push(chunk.content);
-  }
-
-  return { messages };
 };
 
 const workflow = new StateGraph(MessagesAnnotation)

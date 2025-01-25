@@ -80,18 +80,14 @@ export class ChatComponent implements OnInit {
     try {
       this.generatingResponse = true;
       const response = await (window as any).electronAPI.runNodeCode({
-        func: 'send_message_stream',
+        func: 'send_message',
         message: message,
         id: 'chat_1',
       });
 
-      /*const response = await (window as any).electronAPI.runNodeCode({
-        func: 'send-message-stream',
-        message: message,
-      });
-      this.messages = response.chatSession.simplifiedChat;
+      this.messages = response.messages;
       this.changeDetector.detectChanges();
-      this.chat.nativeElement.scrollTop = this.chat.nativeElement.scrollHeight;*/
+      this.chat.nativeElement.scrollTop = this.chat.nativeElement.scrollHeight;
     } catch (error) {
       console.log(error);
     } finally {
