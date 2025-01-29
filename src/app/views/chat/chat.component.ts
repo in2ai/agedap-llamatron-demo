@@ -19,6 +19,8 @@ type Message = {
   styleUrls: [],
 })
 export class ChatComponent implements OnInit {
+  chatId = 'chat_1';
+
   @ViewChild('chat') chat!: ElementRef;
   public headerHeight: number =
     document.getElementById('header')?.offsetHeight || 0;
@@ -53,18 +55,30 @@ export class ChatComponent implements OnInit {
       }
 
       (window as any).electronAPI.onPartialResponse((event: any, data: any) => {
-        if (data.func === 'partial-response') {
-          this.messages = data.chatSession.simplifiedChat;
+        if (data.func === 'partial-response' && data.chat_id === this.chatId) {
+          const newContent = data.content;
+          //if last message is from model, update it else add new message
+          if (this.messages.length > 0) {
+            if (this.messages[this.messages.length - 1].type === 'model') {
+              this.messages[this.messages.length - 1].message = newContent;
+            } else {
+              this.messages.push({ type: 'model', message: newContent });
+            }
+          } else {
+            this.messages.push({ type: 'model', message: newContent });
+          }
           this.changeDetector.detectChanges();
           this.chat.nativeElement.scrollTop =
             this.chat.nativeElement.scrollHeight;
-        } else if (data.func === 'stop-generating-response') {
+        } else if (
+          data.func === 'stop_generating_response' &&
+          data.chat_id === this.chatId
+        ) {
           this.generatingResponse = false;
           this.form.get('message')?.enable();
         }
       });
     } catch (error) {
-      console.log('NGONINIT ERROR: ', error);
       this.errorMessage = this.translateService.instant('COMMON.ERROR');
     }
   }
@@ -82,7 +96,7 @@ export class ChatComponent implements OnInit {
       const response = await (window as any).electronAPI.runNodeCode({
         func: 'send_message',
         message: message,
-        id: 'chat_1',
+        id: this.chatId,
       });
 
       this.messages = response.messages;
@@ -99,7 +113,8 @@ export class ChatComponent implements OnInit {
   async stopGeneratingResponse() {
     try {
       await (window as any).electronAPI.runNodeCode({
-        func: 'stop-generating-response',
+        func: 'stop_generating_response',
+        chat_id: this.chatId,
       });
     } catch (error) {
       console.log(error);

@@ -1,8 +1,8 @@
 import { ipcMain } from "electron";
-import { llmFunctions, llmState } from "./llama.mjs";
 import { dialog } from "electron";
 import { app, loadModel, modelPath } from "./langchain.mjs";
 import { HumanMessage } from "@langchain/core/messages";
+const controllers = new Map();
 
 export function handleRunNodeCode() {
   ipcMain.on("run-node-code", async (event, data) => {
@@ -16,127 +16,19 @@ export function handleRunNodeCode() {
         });
         break;
       }
-      case "select-model": {
-        const dialogResult = await dialog.showOpenDialog({
-          properties: ["openFile"],
-          filters: [{ name: "Model", extensions: ["gguf"] }],
-        });
-        const { filePaths } = dialogResult;
-        if (filePaths.length > 0) {
-          const path = filePaths[0];
-          event.sender.send("node-code-response", {
-            func: "select-model",
-            path,
-          });
-        }
-        break;
-      }
-      case "load-llama": {
+      case "stop_generating_response": {
         try {
-          console.log("Cargando Llama...");
-          await llmFunctions.loadLlama();
-          console.log("Llama cargada correctamente");
+          const { chat_id } = data;
+          const controller = controllers.get(chat_id);
+          if (!controller) {
+            throw new Error("No se encontró el controlador");
+          }
+          console.log("Controller: ", controller);
+          controller.abort();
 
           event.sender.send("node-code-response", {
-            func: "load-llama",
-            ...llmState.state,
-          });
-        } catch (error) {
-          event.sender.send(
-            "node-code-response",
-            `Error al cargar Llama: ${error.message}`
-          );
-        }
-        break;
-      }
-      case "load-model": {
-        const { path } = data;
-        try {
-          console.log("Cargando modelo...");
-          await llmFunctions.loadModel(path);
-          console.log("Modelo cargado correctamente");
-
-          event.sender.send("node-code-response", {
-            func: "load-model",
-            ...llmState.state,
-          });
-        } catch (error) {
-          event.sender.send(
-            "node-code-response",
-            `Error al cargar modelo: ${error.message}`
-          );
-        }
-        break;
-      }
-      case "create-chat-session": {
-        try {
-          console.log("Creando sesión de chat...");
-          await llmFunctions.createContext();
-          await llmFunctions.createContextSequence();
-          await llmFunctions.chatSession.createChatSession();
-          console.log("Sesión de chat creada correctamente");
-
-          event.sender.send("node-code-response", {
-            func: "create-chat-session",
-            ...llmState.state,
-          });
-        } catch (error) {
-          event.sender.send(
-            "node-code-response",
-            `Error al crear sesión de chat: ${error.message}`
-          );
-        }
-        break;
-      }
-      case "send-message": {
-        const { message } = data;
-        try {
-          console.log("Enviando mensaje...");
-          const res = await llmFunctions.chatSession.prompt(message);
-          console.log("Mensaje enviado correctamente: ", res);
-
-          event.sender.send("node-code-response", {
-            func: "send-message",
-            ...llmState.state,
-          });
-        } catch (error) {
-          event.sender.send(
-            "node-code-response",
-            `Error al enviar mensaje: ${error.message}`
-          );
-        }
-        break;
-      }
-      case "send-message-stream": {
-        const { message } = data;
-        try {
-          console.log("Enviando mensaje...");
-          const res = await llmFunctions.chatSession.prompt(message, (data) => {
-            event.sender.send("partial-response", data);
-          });
-          console.log("Mensaje enviado correctamente: ", res);
-
-          event.sender.send("node-code-response", {
-            func: "send-message",
-            ...llmState.state,
-          });
-        } catch (error) {
-          event.sender.send(
-            "node-code-response",
-            `Error al enviar mensaje: ${error.message}`
-          );
-        }
-        break;
-      }
-      case "stop-generating-response": {
-        try {
-          console.log("Deteniendo generación de respuesta...");
-          llmFunctions.chatSession.stopActivePrompt();
-          console.log("Generación de respuesta detenida correctamente");
-
-          event.sender.send("node-code-response", {
-            func: "stop-generating-response",
-            ...llmState.state,
+            func: "stop_generating_response",
+            chat_id,
           });
         } catch (error) {
           event.sender.send(
@@ -146,14 +38,6 @@ export function handleRunNodeCode() {
         }
         break;
       }
-      case "llm-state": {
-        event.sender.send("node-code-response", {
-          func: "llm-state",
-          ...llmState.state,
-        });
-        break;
-      }
-
       case "state": {
         const state = {
           modelPath: modelPath,
@@ -196,7 +80,32 @@ export function handleRunNodeCode() {
             },
           ],
         };
-        const config = { configurable: { thread_id: id } };
+
+        const controller = new AbortController();
+        controllers.set(id, controller);
+        let newMessage = "";
+        const config = {
+          configurable: { thread_id: id },
+          signal: controller.signal,
+          callbacks: [
+            {
+              handleCustomEvent(eventName, data, runId) {
+                if (
+                  eventName === "onTextChunk" &&
+                  controller.signal.aborted === false
+                ) {
+                  newMessage += data;
+                  event.sender.send("partial-response", {
+                    func: "partial-response",
+                    chat_id: id,
+                    content: newMessage,
+                  });
+                }
+              },
+            },
+          ],
+        };
+
         const response = await app.invoke(input, config);
 
         let messages = [];

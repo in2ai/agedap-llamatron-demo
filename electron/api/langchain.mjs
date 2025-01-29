@@ -7,6 +7,7 @@ import {
 } from "@langchain/langgraph";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 import { ChatLlamaCpp } from "@langchain/community/chat_models/llama_cpp";
+import { dispatchCustomEvent } from "@langchain/core/callbacks/dispatch";
 
 let model = null;
 export let modelPath = null;
@@ -34,7 +35,13 @@ const callModel = async (state) => {
     }
 
     const prompt = await promptTemplate.invoke(state);
-    const response = await model.invoke(prompt);
+    const response = await model.invoke(prompt, {
+      onToken: async (token) => {
+        const detokenized = model._model.tokenizer.detokenize(token);
+        await dispatchCustomEvent("onTextChunk", detokenized);
+      },
+    });
+
     return { messages: [response] };
   } catch (error) {
     return { messages: [{ type: "system", text: error.toString() }] };
@@ -53,14 +60,17 @@ export const app = workflow.compile({ checkpointer: new MemorySaver() });
   const input = {
     messages: [new HumanMessage("My name is Adrian")],
   };
-  const config = { configurable: { thread_id: uuidv4() } };
-  const output = await app.invoke(input, config);
-  console.log(output.messages[output.messages.length - 1]);
-
-  const input2 = {
-    messages: [new HumanMessage("Whats my name?")],
-  };
-  const output2 = await app.invoke(input2, config);
-  console.log(output2.messages[output2.messages.length - 1]);
+  const output = await app.invoke(input, {
+    configurable: { thread_id: "chat_1" },
+    callbacks: [
+      {
+        handleCustomEvent(eventName, data, runId) {
+          if (eventName === "onTextChunk") {
+            console.log("HEY: ", data);
+          }
+        },
+      },
+    ],
+  });
 };
 test();*/
