@@ -1,15 +1,9 @@
-import {
-  Component,
-  EventEmitter,
-  OnDestroy,
-  OnInit,
-  Output,
-} from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MenuItem } from 'primeng/api';
 import { APP_ROUTES, MainRouteInfo } from '../sidebar/sidebar.routes';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-header',
@@ -39,9 +33,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
         this.title = document.title;
 
         const currentRoute = this.router.url;
-        const mainRoute = this.sidebarRoutes.find((route) =>
-          currentRoute.includes(route.path)
-        );
+        const mainRoute = this.sidebarRoutes.find((route) => currentRoute.includes(route.path));
         console.log('mainRoute', mainRoute);
 
         if (mainRoute && mainRoute.routes && mainRoute.routes.length > 0) {
@@ -53,9 +45,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
             };
           });
 
-          this.activeTab = this.tabs.find((tab) =>
-            currentRoute.includes(tab.routerLink)
-          );
+          this.activeTab = this.tabs.find((tab) => currentRoute.includes(tab.routerLink));
           console.log('activeTab', this.activeTab);
           this.icon = this.activeTab?.icon || 'pi pi-home';
         } else {

@@ -13,7 +13,8 @@
     "build-pro": "ng build --prod",
     "electron": "ng build && electron .",
     "package": "electron-forge package",
-    "make": "electron-forge make"
+    "make": "electron-forge make",
+    "lint": "ng lint"
   },
   "private": true,
   "dependencies": {
@@ -68,9 +69,13 @@
     "@electron/fuses": "^1.8.0",
     "@types/jasmine": "~5.1.0",
     "@types/lodash": "^4.17.10",
+    "angular-eslint": "19.1.0",
     "autoprefixer": "^10.4.20",
     "cors": "^2.8.5",
     "electron": "^33.0.2",
+    "eslint": "^9.20.0",
+    "eslint-config-prettier": "^10.0.1",
+    "eslint-plugin-prettier": "^5.2.3",
     "express": "^4.21.0",
     "jasmine-core": "~5.2.0",
     "jsonwebtoken": "^9.0.2",
@@ -83,6 +88,9 @@
     "morgan": "^1.10.0",
     "pm2": "^5.4.2",
     "postcss": "^8.5.1",
-    "typescript": "~5.5.2"
+    "prettier": "^3.5.0",
+    "prettier-eslint": "^16.3.0",
+    "typescript": "~5.5.2",
+    "typescript-eslint": "8.23.0"
   }
 }

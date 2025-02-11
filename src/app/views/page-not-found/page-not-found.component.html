@@ -1,15 +1,11 @@
 <article class="absolute inset-0 flex items-center justify-center">
   <div class="flex flex-col items-center justify-center">
     <h2 class="text-3xl font-bold text-center text-gray-800">
-      {{ "404.TITLE" | translate }}
+      {{ '404.TITLE' | translate }}
     </h2>
     <p class="text-center text-gray-800">
-      {{ "404.MESSAGE" | translate }}
+      {{ '404.MESSAGE' | translate }}
     </p>
-    <p-button
-      routerLink="/dashboard"
-      class="mt-4"
-      label="{{ '404.BACK' | translate }}"
-    ></p-button>
+    <p-button routerLink="/dashboard" class="mt-4" label="{{ '404.BACK' | translate }}"></p-button>
   </div>
 </article>

@@ -1,8 +1,7 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
+import { Component, ViewChild } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
 import { HeaderComponent } from './header/header.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
-import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-layout',
@@ -10,14 +9,10 @@ import { RouterOutlet } from '@angular/router';
   imports: [HeaderComponent, SidebarComponent, RouterOutlet],
   styleUrls: [],
 })
-export class LayoutComponent implements OnInit {
+export class LayoutComponent {
   @ViewChild('sidebar') sidebar: any;
 
-  constructor(
-  ) {}
-
-  ngOnInit() {
-  }
+  constructor() {}
 
   onToggleSidebar() {
     this.sidebar.toggleSidebar();

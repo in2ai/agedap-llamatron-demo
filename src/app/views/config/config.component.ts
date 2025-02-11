@@ -14,7 +14,6 @@ export class ConfigComponent implements OnInit {
   public electronTest?: boolean;
   public modelLoaded?: boolean | null;
   public modelName?: string;
-  constructor() {}
 
   async ngOnInit() {
     try {
@@ -32,6 +31,7 @@ export class ConfigComponent implements OnInit {
         }
       }
     } catch (error) {
+      console.log(error);
       this.electronTest = false;
       this.modelLoaded = false;
     }

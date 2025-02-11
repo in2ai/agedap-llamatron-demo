@@ -5,13 +5,10 @@
         ><div class="flex flex-row justify-start items-center">
           <h1 class="text-xl">Cargando chat...</h1>
         </div>
-        </ng-container
-      >
-      <span
-        *ngIf="errorMessage"
-        class="text-red-500 font-bold text-lg uppercase"
-        >{{ errorMessage }}</span
-      >
+      </ng-container>
+      <span *ngIf="errorMessage" class="text-red-500 font-bold text-lg uppercase">{{
+        errorMessage
+      }}</span>
     </div>
   </ng-container>
 
@@ -21,7 +18,7 @@
         *ngFor="let message of messages"
         [ngClass]="{
           'justify-end': message.type === 'user',
-          'justify-start': message.type === 'model'
+          'justify-start': message.type === 'model',
         }"
         class="flex w-full mb-2"
       >
@@ -31,13 +28,11 @@
             'bg-green-700 text-white': message.type === 'user',
             'bg-gray-300 text-black': message.type === 'model',
             'rounded-br-none': message.type === 'user',
-            'rounded-bl-none': message.type === 'model'
+            'rounded-bl-none': message.type === 'model',
           }"
         >
           <markdown [data]="message.message" class="text-sm block"></markdown>
-          <small class="text-xs block mt-1 italic text-right opacity-75">{{
-            message.type
-          }}</small>
+          <small class="text-xs block mt-1 italic text-right opacity-75">{{ message.type }}</small>
         </div>
       </div>
     </div>

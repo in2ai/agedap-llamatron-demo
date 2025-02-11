@@ -1,9 +1,9 @@
-import { Component } from '@angular/core';
-import { APP_ROUTES, MainRouteInfo, RouteInfo } from './sidebar.routes';
-import { Router, RouterLink } from '@angular/router';
-import { environment } from 'src/environments/environment';
-import { TranslateModule } from '@ngx-translate/core';
 import { CommonModule, NgClass } from '@angular/common';
+import { Component } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
+import { environment } from 'src/environments/environment';
+import { APP_ROUTES, MainRouteInfo, RouteInfo } from './sidebar.routes';
 
 @Component({
   selector: 'app-sidebar',
@@ -14,7 +14,7 @@ import { CommonModule, NgClass } from '@angular/common';
 export class SidebarComponent {
   constructor(private router: Router) {}
 
-  public sidebarVisible: boolean = false;
+  public sidebarVisible = false;
   public mainRoutes: MainRouteInfo[] = APP_ROUTES;
   public appName: string = environment.appName;
 

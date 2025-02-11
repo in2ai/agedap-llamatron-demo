@@ -1,8 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { I18nService } from './@shared/service/translate.service';
-import { environment } from 'src/environments/environment';
-import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ToastModule } from 'primeng/toast';
+import { environment } from 'src/environments/environment';
+import { I18nService } from './@shared/service/translate.service';
 import { LayoutComponent } from './layout/layout.component';
 
 @Component({
@@ -16,10 +16,7 @@ export class AppComponent implements OnInit, OnDestroy {
   title = 'Agedap Llamatron';
 
   ngOnInit() {
-    this.i18nService.init(
-      environment.defaultLanguage,
-      environment.supportedLanguages
-    );
+    this.i18nService.init(environment.defaultLanguage, environment.supportedLanguages);
   }
 
   ngOnDestroy() {
