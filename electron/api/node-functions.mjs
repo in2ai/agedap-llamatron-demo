@@ -3,6 +3,8 @@ import { dialog } from "electron";
 import { app, loadModel, modelPath } from "./langchain.mjs";
 import { HumanMessage } from "@langchain/core/messages";
 import { getWorkOffers } from "./relay.mjs";
+import { RELAY_LIST } from "./relays.mjs";
+import { deleteWorkspace, getWorkspace, getWorkspaces, replaceMessages, startMongoServer, stopMongoServer } from "./db.mjs";
 const controllers = new Map();
 
 export function handleRunNodeCode() {
@@ -15,28 +17,6 @@ export function handleRunNodeCode() {
           func: "test",
           message: "Función test ejecutada",
         });
-        break;
-      }
-      case "stop_generating_response": {
-        try {
-          const { chat_id } = data;
-          const controller = controllers.get(chat_id);
-          if (!controller) {
-            throw new Error("No se encontró el controlador");
-          }
-          console.log("Controller: ", controller);
-          controller.abort();
-
-          event.sender.send("node-code-response", {
-            func: "stop_generating_response",
-            chat_id,
-          });
-        } catch (error) {
-          event.sender.send(
-            "node-code-response",
-            `Error al detener generación de respuesta: ${error.message}`
-          );
-        }
         break;
       }
       case "state": {
@@ -69,6 +49,68 @@ export function handleRunNodeCode() {
             modelPath,
           });
         }
+        break;
+      }
+      case "select_file": {
+        const { name, extensions } = data;
+        const dialogResult = await dialog.showOpenDialog({
+          properties: ["openFile"],
+          filters: [{ name: name, extensions: extensions }],
+        });
+        const { filePaths } = dialogResult;
+
+        event.sender.send("node-code-response", {
+          func: "select_file",
+          filePaths,
+        });
+        break;
+      }
+      /*case "get_offers": {
+        const { lastTimeStamp, selectedIndustry } = data;
+        const response = await getWorkOffers(lastTimeStamp, selectedIndustry);
+        event.sender.send("node-code-response", {
+          func: "get_offers",
+          response,
+        });
+      }*/
+      case "get_relays": {
+        event.sender.send("node-code-response", {
+          func: "get_offers",
+          relays: RELAY_LIST
+        });
+        break;
+      }
+      case "get_workspaces": {
+        const { page, limit } = data;
+        await startMongoServer();
+        const workspaces = await getWorkspaces(page, limit);
+        await stopMongoServer();
+        event.sender.send("node-code-response", {
+          func: "get_workspaces",
+          workspaces,
+        });
+        break;
+      }
+      case "get_workspace": {
+        const { id } = data;
+        await startMongoServer();
+        const workspace = await getWorkspace(id);
+        await stopMongoServer();
+        event.sender.send("node-code-response", {
+          func: "get_workspace",
+          workspace,
+        });
+        break;
+      }
+      case "delete_workspace": {
+        const { id } = data;
+        await startMongoServer();
+        await deleteWorkspace(id);
+        await stopMongoServer();
+        event.sender.send("node-code-response", {
+          func: "delete_workspace",
+          id,
+        });
         break;
       }
       case "send_message": {
@@ -123,6 +165,7 @@ export function handleRunNodeCode() {
             });
           }
         });
+        await replaceMessages(id, messages);
 
         event.sender.send("node-code-response", {
           func: "send_message",
@@ -130,13 +173,27 @@ export function handleRunNodeCode() {
         });
         break;
       }
-      case "get_offers": {
-        const { lastTimeStamp, selectedIndustry } = data;
-        const response = await getWorkOffers(lastTimeStamp, selectedIndustry);
-        event.sender.send("node-code-response", {
-          func: "get_offers",
-          response,
-        });
+      case "stop_generating_response": {
+        try {
+          const { chat_id } = data;
+          const controller = controllers.get(chat_id);
+          if (!controller) {
+            throw new Error("No se encontró el controlador");
+          }
+          console.log("Controller: ", controller);
+          controller.abort();
+
+          event.sender.send("node-code-response", {
+            func: "stop_generating_response",
+            chat_id,
+          });
+        } catch (error) {
+          event.sender.send(
+            "node-code-response",
+            `Error al detener generación de respuesta: ${error.message}`
+          );
+        }
+        break;
       }
       default: {
         event.sender.send("node-code-response", "Función no encontrada");
