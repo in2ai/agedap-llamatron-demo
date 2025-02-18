@@ -35,6 +35,7 @@
     "@ngx-translate/http-loader": "^8.0.0",
     "@primeng/themes": "^19.0.6",
     "@tailwindcss/postcss": "^4.0.5",
+    "ag-grid-angular": "^33.1.0",
     "electron-squirrel-startup": "^1.0.1",
     "extract-zip": "^2.0.1",
     "interpolate-url": "^0.0.2",
