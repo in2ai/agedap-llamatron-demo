@@ -2,6 +2,7 @@ import { ipcMain } from 'electron';
 import { dialog } from 'electron';
 import { app, loadModel, modelPath } from './langchain.mjs';
 import { HumanMessage } from '@langchain/core/messages';
+import { replaceMessages } from './db.mjs';
 const controllers = new Map();
 
 export function handleRunNodeCode() {
@@ -51,7 +52,7 @@ export function handleRunNodeCode() {
         const { name, extensions } = data;
         const dialogResult = await dialog.showOpenDialog({
           properties: ['openFile'],
-          filters: [{ name: name, extensions: extensions }],
+          filters: [{ name, extensions }],
         });
         const { filePaths } = dialogResult;
 
@@ -99,27 +100,6 @@ export function handleRunNodeCode() {
           func: 'delete_workspace',
           id,
         });
-        break;
-      }
-      case 'select_zip_file': {
-        const dialogResult = await dialog.showOpenDialog({
-          properties: ['openFile'],
-          filters: [{ name: 'Model', extensions: ['zip'] }],
-        });
-        const { filePaths } = dialogResult;
-
-        if (filePaths.length > 0) {
-          const filePath = filePaths[0];
-          let fileName = filePath;
-          fileName = fileName.split('\\').pop() || '';
-          fileName = fileName.split('/').pop() || '';
-
-          event.sender.send('node-code-response', {
-            func: 'select_zip_file',
-            fileName,
-            filePath,
-          });
-        }
         break;
       }
       case 'send_message': {

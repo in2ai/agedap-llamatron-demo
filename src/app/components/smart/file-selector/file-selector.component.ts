@@ -26,7 +26,9 @@ export class FileSelectorComponent {
   async onClickFileSelector() {
     try {
       const response = await (window as any).electronAPI.runNodeCode({
-        func: 'select_zip_file',
+        func: 'select_file',
+        name: 'All Files',
+        extensions: ['zip'],
       });
       this.fileName = response.fileName;
       this.filePath = response.filePath;
