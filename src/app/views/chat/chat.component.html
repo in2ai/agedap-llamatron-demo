@@ -1,4 +1,4 @@
-<div class="flex flex-col justify-between items-startw-full h-full">
+<div class="flex flex-col justify-between w-full h-full">
   <ng-container *ngIf="!chatLoaded">
     <div class="flex w-full h-full justify-center items-center">
       <ng-container *ngIf="!errorMessage"
@@ -6,9 +6,13 @@
           <h1 class="text-xl">Cargando chat...</h1>
         </div>
       </ng-container>
-      <span *ngIf="errorMessage" class="text-red-500 font-bold text-lg uppercase">{{
-        errorMessage
-      }}</span>
+      <div
+        *ngIf="errorMessage"
+        class="text-red-500 flex flex-col justify-center items-center font-bold text-lg uppercase"
+      >
+        <i class="!text-2xl pi pi-exclamation-triangle"></i>
+        <div>{{ errorMessage }}</div>
+      </div>
     </div>
   </ng-container>
 
