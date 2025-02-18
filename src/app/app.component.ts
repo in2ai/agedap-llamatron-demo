@@ -2,8 +2,8 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
 import { environment } from 'src/environments/environment';
-import { I18nService } from './@shared/service/translate.service';
 import { LayoutComponent } from './layout/layout.component';
+import { I18nService } from './service/translate.service';
 
 @Component({
   selector: 'app-root',

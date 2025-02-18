@@ -1,39 +1,70 @@
 <div class="flex w-full h-full justify-center items-center text-slate-500">
-  <div class="w-1/3">
+  <div class="w-[80%] max-w-[50rem]">
     <div class="border border-slate-300 p-5 rounded-md">
       <div class="flex flex-col gap-4 items-center">
-        <section class="text-justify">
-          <header class="font-bold pb-3 mb-3 border-b border-gray-400 border-dotted">
+        <section class="flex flex-col gap-5">
+          <header class="font-bold pb-3 border-b border-gray-300 border-dotted">
             <h1 class="flex flex-row justify-start items-center">
               <i class="pi pi-desktop pr-2"></i>Crear nuevo espacio de trabajo
             </h1>
           </header>
-          <main class="pb-10">
-            <div class="pb-3">
+          <main class="flex flex-col gap-5">
+            <div>
               <p>
-                Un espacio de trabajo permite guardar un contexto para poder guardar el chat con la
-                IA
+                Un espacio de trabajo permite guardar un chat con un contexto (documentos asociados,
+                relays, ...) asociado.
               </p>
             </div>
+            <div class="w-1/3">
+              <app-select
+                label="Tipo de espacio de trabajo"
+                [control]="getWorkSpaceControl('type')"
+                [options]="workSpaceTypes"
+              />
+            </div>
             <!-- Formulario -->
-            <div>
-              <div class="pb-3">
-                <app-field
-                  label="Nombre"
-                  [control]="getWorkSpaceControl('name')"
-                  [placeholder]="'Entrar nombre espacio de trabajo'"
-                />
-              </div>
-              <div class="pb-3">
-                <app-field
-                  label="Descripción"
-                  [control]="getWorkSpaceControl('name')"
-                  [placeholder]="'Entrar descripción espacio de trabajo'"
-                />
+            <div class="flex flex-row gap-6">
+              <fieldset class="w-1/2 flex flex-col gap-4">
+                <legend
+                  class="w-full text-sm font-bold pb-3 border-b border-dotted border-slate-300 mb-3"
+                >
+                  Datos generales:
+                </legend>
+                <div class="w-full flex flex-col gap-4">
+                  <div>
+                    <app-field
+                      label="Nombre"
+                      [control]="getWorkSpaceControl('name')"
+                      [placeholder]="'Entrar nombre espacio de trabajo'"
+                    />
+                  </div>
+                  <div>
+                    <app-textarea
+                      label="Descripción"
+                      [control]="getWorkSpaceControl('description')"
+                      rows="4"
+                      [placeholder]="'Entrar descripción espacio de trabajo'"
+                    />
+                  </div>
+                </div>
+              </fieldset>
+
+              <div class="w-1/2 flex flex-col gap-4">
+                <div class="flex w-full h-full">
+                  <app-work-space-documents
+                    [workSpaceType]="workSpaceForm.value.type"
+                    [formGroup]="workSpaceDocumentsForm"
+                  />
+                </div>
               </div>
             </div>
+            <!-- For debugging purposes -->
+            <div *ngIf="false" class="bg-slate-400 rounded-md text-white p-5 flex flex-col gap-2">
+              <div>{{ workSpaceForm.value | json }}</div>
+              <div>{{ workSpaceDocumentsForm.value | json }}</div>
+            </div>
           </main>
-          <footer class="flex justify-end">
+          <footer class="flex justify-end border-t border-gray-300 border-dotted pt-5">
             <app-button
               (click)="saveWorkSpace()"
               [label]="'WORKSPACE.CREATE_WORKSPACE' | translate"
