@@ -1,4 +1,5 @@
 <div class="flex flex-col w-full h-full justify-start text-slate-500">
+  <!-- No work spaces found -->
   <div
     *ngIf="workSpaces.length === 0"
     class="flex flex-col w-full h-full justify-center items-center"
@@ -11,5 +12,22 @@
         [label]="'WORKSPACE.CREATE_WORKSPACE' | translate"
       />
     </div>
+  </div>
+  <!-- Work spaces found -->
+  <div *ngIf="workSpaces.length > 0" class="flex flex-col w-full h-full">
+    <header>
+      <div class="flex flex-row justify-between items-center p-4">
+        <h1 class="text-lg font-semibold">
+          <i class="pi pi-desktop pr-2"></i>
+          <span>Mis espacios de trabajo</span>
+        </h1>
+        <app-button
+          (click)="createNewWorkSpace()"
+          [label]="'WORKSPACE.CREATE_WORKSPACE' | translate"
+          icon="plus"
+        />
+      </div>
+    </header>
+    <main class="flex flex-1 bg-slate-500">aggrid</main>
   </div>
 </div>
