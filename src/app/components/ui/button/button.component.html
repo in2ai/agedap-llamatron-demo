@@ -13,8 +13,8 @@
   [disabled]="isDisabled"
   (click)="onClickButton($event)"
 >
-  <span *ngIf="icon" class="mr-2">
+  <span *ngIf="icon">
     <i [ngClass]="'!text-xs pi pi-' + icon"></i>
   </span>
-  <span>{{ label }}</span>
+  <span *ngIf="label" class="px-2">{{ label }}</span>
 </button>

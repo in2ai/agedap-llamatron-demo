@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
-import { TitleResolver } from './@shared/service/title.resolver';
-import { ChatComponent } from './views/chat/chat.component';
+import { TitleResolver } from './service/title.resolver';
 import { ConfigComponent } from './views/config/config.component';
 import { PageNotFoundComponent } from './views/page-not-found/page-not-found.component';
 import { WorkSpaceDetailComponent } from './views/work-space-detail/work-space-detail.component';
@@ -16,10 +15,6 @@ export const routes: Routes = [
   {
     path: 'config',
     component: ConfigComponent,
-  },
-  {
-    path: 'chat',
-    component: ChatComponent,
   },
   {
     path: 'workspace',

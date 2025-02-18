@@ -1,66 +1,85 @@
-import { ipcMain } from "electron";
-import { dialog } from "electron";
-import { app, loadModel, modelPath } from "./langchain.mjs";
-import { HumanMessage } from "@langchain/core/messages";
-import { getWorkOffers } from "./relay.mjs";
-import { RELAY_LIST } from "./relays.mjs";
-import { deleteWorkspace, getWorkspace, getWorkspaces, replaceMessages, startMongoServer, stopMongoServer } from "./db.mjs";
+import { ipcMain } from 'electron';
+import { dialog } from 'electron';
+import { app, loadModel, modelPath } from './langchain.mjs';
+import { HumanMessage } from '@langchain/core/messages';
+import { getWorkOffers } from './relay.mjs';
 const controllers = new Map();
 
 export function handleRunNodeCode() {
-  ipcMain.on("run-node-code", async (event, data) => {
+  ipcMain.on('run-node-code', async (event, data) => {
     const { func } = data;
 
     switch (func) {
-      case "test": {
-        event.sender.send("node-code-response", {
-          func: "test",
-          message: "Función test ejecutada",
+      case 'test': {
+        event.sender.send('node-code-response', {
+          func: 'test',
+          message: 'Función test ejecutada',
         });
         break;
       }
-      case "state": {
+      case 'stop_generating_response': {
+        try {
+          const { chat_id } = data;
+          const controller = controllers.get(chat_id);
+          if (!controller) {
+            throw new Error('No se encontró el controlador');
+          }
+          console.log('Controller: ', controller);
+          controller.abort();
+
+          event.sender.send('node-code-response', {
+            func: 'stop_generating_response',
+            chat_id,
+          });
+        } catch (error) {
+          event.sender.send(
+            'node-code-response',
+            `Error al detener generación de respuesta: ${error.message}`
+          );
+        }
+        break;
+      }
+      case 'state': {
         const state = {
           modelPath: modelPath,
         };
-        event.sender.send("node-code-response", {
-          func: "state",
+        event.sender.send('node-code-response', {
+          func: 'state',
           ...state,
         });
         break;
       }
-      case "select_model": {
+      case 'select_model': {
         const dialogResult = await dialog.showOpenDialog({
-          properties: ["openFile"],
-          filters: [{ name: "Model", extensions: ["gguf"] }],
+          properties: ['openFile'],
+          filters: [{ name: 'Model', extensions: ['gguf'] }],
         });
         const { filePaths } = dialogResult;
 
         if (filePaths.length > 0) {
           const modelPath = filePaths[0];
           let modelName = modelPath;
-          modelName = modelName.split("\\").pop() || "";
-          modelName = modelName.split("/").pop() || "";
-
+          modelName = modelName.split('\\').pop() || '';
+          modelName = modelName.split('/').pop() || '';
           await loadModel(modelPath);
-          event.sender.send("node-code-response", {
-            func: "select_model",
+          event.sender.send('node-code-response', {
+            func: 'select_model',
             modelName,
             modelPath,
           });
         }
         break;
       }
-      case "select_file": {
+      case 'select_file': {
         const { name, extensions } = data;
         const dialogResult = await dialog.showOpenDialog({
-          properties: ["openFile"],
+          properties: ['openFile'],
           filters: [{ name: name, extensions: extensions }],
         });
         const { filePaths } = dialogResult;
 
-        event.sender.send("node-code-response", {
-          func: "select_file",
+        event.sender.send('node-code-response', {
+          func: 'select_file',
           filePaths,
         });
         break;
@@ -73,52 +92,73 @@ export function handleRunNodeCode() {
           response,
         });
       }*/
-      case "get_relays": {
-        event.sender.send("node-code-response", {
-          func: "get_offers",
-          relays: RELAY_LIST
+      case 'get_relays': {
+        event.sender.send('node-code-response', {
+          func: 'get_offers',
+          relays: RELAY_LIST,
         });
         break;
       }
-      case "get_workspaces": {
+      case 'get_workspaces': {
         const { page, limit } = data;
         await startMongoServer();
         const workspaces = await getWorkspaces(page, limit);
         await stopMongoServer();
-        event.sender.send("node-code-response", {
-          func: "get_workspaces",
+        event.sender.send('node-code-response', {
+          func: 'get_workspaces',
           workspaces,
         });
         break;
       }
-      case "get_workspace": {
+      case 'get_workspace': {
         const { id } = data;
         await startMongoServer();
         const workspace = await getWorkspace(id);
         await stopMongoServer();
-        event.sender.send("node-code-response", {
-          func: "get_workspace",
+        event.sender.send('node-code-response', {
+          func: 'get_workspace',
           workspace,
         });
         break;
       }
-      case "delete_workspace": {
+      case 'delete_workspace': {
         const { id } = data;
         await startMongoServer();
         await deleteWorkspace(id);
         await stopMongoServer();
-        event.sender.send("node-code-response", {
-          func: "delete_workspace",
+        event.sender.send('node-code-response', {
+          func: 'delete_workspace',
           id,
         });
         break;
       }
-      case "send_message": {
+      case 'select_zip_file': {
+        const dialogResult = await dialog.showOpenDialog({
+          properties: ['openFile'],
+          filters: [{ name: 'Model', extensions: ['zip'] }],
+        });
+        const { filePaths } = dialogResult;
+
+        if (filePaths.length > 0) {
+          const filePath = filePaths[0];
+          let fileName = filePath;
+          fileName = fileName.split('\\').pop() || '';
+          fileName = fileName.split('/').pop() || '';
+
+          event.sender.send('node-code-response', {
+            func: 'select_zip_file',
+            fileName,
+            filePath,
+          });
+        }
+        break;
+      }
+      case 'send_message': {
         const { message, id } = data;
         const input = {
           messages: [
             {
-              role: "user",
+              role: 'user',
               content: message,
             },
           ],
@@ -126,20 +166,17 @@ export function handleRunNodeCode() {
 
         const controller = new AbortController();
         controllers.set(id, controller);
-        let newMessage = "";
+        let newMessage = '';
         const config = {
           configurable: { thread_id: id },
           signal: controller.signal,
           callbacks: [
             {
               handleCustomEvent(eventName, data, runId) {
-                if (
-                  eventName === "onTextChunk" &&
-                  controller.signal.aborted === false
-                ) {
+                if (eventName === 'onTextChunk' && controller.signal.aborted === false) {
                   newMessage += data;
-                  event.sender.send("partial-response", {
-                    func: "partial-response",
+                  event.sender.send('partial-response', {
+                    func: 'partial-response',
                     chat_id: id,
                     content: newMessage,
                   });
@@ -155,48 +192,56 @@ export function handleRunNodeCode() {
         response.messages.forEach((msg) => {
           if (msg instanceof HumanMessage) {
             messages.push({
-              type: "user",
+              type: 'user',
               message: msg.content,
             });
           } else {
             messages.push({
-              type: "model",
+              type: 'model',
               message: msg.content,
             });
           }
         });
         await replaceMessages(id, messages);
 
-        event.sender.send("node-code-response", {
-          func: "send_message",
+        event.sender.send('node-code-response', {
+          func: 'send_message',
           messages,
         });
         break;
       }
-      case "stop_generating_response": {
+      case 'stop_generating_response': {
         try {
           const { chat_id } = data;
           const controller = controllers.get(chat_id);
           if (!controller) {
-            throw new Error("No se encontró el controlador");
+            throw new Error('No se encontró el controlador');
           }
-          console.log("Controller: ", controller);
+          console.log('Controller: ', controller);
           controller.abort();
 
-          event.sender.send("node-code-response", {
-            func: "stop_generating_response",
+          event.sender.send('node-code-response', {
+            func: 'stop_generating_response',
             chat_id,
           });
         } catch (error) {
           event.sender.send(
-            "node-code-response",
+            'node-code-response',
             `Error al detener generación de respuesta: ${error.message}`
           );
         }
         break;
       }
+      case 'get_offers': {
+        const { lastTimeStamp, selectedIndustry } = data;
+        const response = await getWorkOffers(lastTimeStamp, selectedIndustry);
+        event.sender.send('node-code-response', {
+          func: 'get_offers',
+          response,
+        });
+      }
       default: {
-        event.sender.send("node-code-response", "Función no encontrada");
+        event.sender.send('node-code-response', 'Función no encontrada');
       }
     }
   });

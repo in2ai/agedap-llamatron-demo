@@ -1,8 +1,21 @@
+<!-- Drawer -->
+<app-drawer [isOpen]="showConfiguration" (onClose)="onToggleConfiguration()">
+  <div class="flex w-full h-full">
+    <app-work-space-documents workSpaceType="workOffers" [formGroup]="workSpaceDocumentsForm" />
+  </div>
+</app-drawer>
+
+<!-- Content -->
 <div class="flex flex-col w-full h-full justify-start items-start text-slate-500">
-  <header class="w-full font-bold pb-3 mb-3 border-b border-gray-400 border-dotted">
+  <header class="flex-none w-full font-bold pb-3 mb-3 border-b border-gray-400 border-dotted">
     <div class="flex flex-row justify-between items-center">
-      <h1><i class="pi pi-desktop pr-2"></i>Espacio de trabajo | {{ workSpace.name }}</h1>
-      <i class="pi pi-cog pr-2"></i>
+      <h1><i class="pi pi-comments pr-2"></i>Espacio de trabajo | {{ workSpace.name }}</h1>
+      <div class="cursor-pointer" (click)="onToggleConfiguration()">
+        <i class="pi pi-cog p-2"></i>
+      </div>
     </div>
   </header>
+  <main class="flex flex-1 w-full h-full">
+    <app-chat />
+  </main>
 </div>

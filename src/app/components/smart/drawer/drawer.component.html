@@ -1,0 +1,18 @@
+<div
+  class="w-[30rem] transition-all duration-200 ease-in-out fixed top-0 h-full bg-white shadow-lg z-50"
+  [ngClass]="isOpen ? 'right-0' : '-right-[30rem]'"
+>
+  <header class="flex-none w-full font-bold p-5 mb-3">
+    <div
+      class="flex flex-row justify-between items-center border-b border-gray-400 border-dotted pb-3"
+    >
+      <h1>Configuración espacio de trabajo</h1>
+      <div class="cursor-pointer" (click)="onClose.emit()">
+        <i class="pi pi-times pr-2"></i>
+      </div>
+    </div>
+  </header>
+  <main class="flex-1 w-full h-full p-5">
+    <ng-content />
+  </main>
+</div>

@@ -1,0 +1,47 @@
+// workspace base: endpoints GET, POST, PUT, DELETE
+
+{
+  id: string; // Unique identifier
+  type: 'offers' | 'misc'; // Type of workspace
+  name: string; // Name of the workspace
+  description: string; // Description of the workspace
+  createAt: string; // Date of creation UTC
+  updateAt?: string; // Date of last update UTC
+}
+
+//
+offers
+{
+  documento: cv -> matching    endpoint (se le pasa el idWorkspace y ruta al cv)
+  relay: url de trabajo        endpoint (se le pasa idWorkspace y idRelay)
+}
+
+//
+misc
+{
+  documento:                   endpoint (se le pasa el idWorkspace y ruta al cv)
+}
+
+// message: endpoints GET, POST
+
+[
+  {
+  id: string; // Unique identifier
+  workspaceId: string; // Workspace identifier
+  message: string; // Message content
+  createAt: string; // Date of creation UTC
+  updateAt?: string; // Date of last update UTC
+  type: 'user' | 'model'; // Type of message
+}
+...
+]
+
+// relay
+
+{
+  id: string; // Unique identifier
+  name: string; // Name of the relay
+  description: string; // Description of the relay
+  url: string; // URL of the relay
+}
+
