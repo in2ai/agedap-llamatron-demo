@@ -1,0 +1,14 @@
+<div class="flex flex-col justify-start gap-2">
+  <label class="text-sm text-fieldLabel relative -bottom-1" for="pn">{{ label }}</label>
+
+  <div class="flex flex-1 w-full flex-row gap-2 justify-between items-center">
+    <input
+      readonly
+      class="flex flex-1 text-base text-fieldInput p-2 rounded-md bg-slate-100 outline-slate-300"
+      id="[id]"
+      type="text"
+      [formControl]="control"
+    />
+    <app-button type="primary" icon="file" (onClick)="onClickFileSelector()" />
+  </div>
+</div>
