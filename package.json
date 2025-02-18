@@ -12,6 +12,7 @@
     "build-dev": "ng build --configuration=development",
     "build-pro": "ng build --prod",
     "electron": "ng build && electron .",
+    "electron-dev": "ng build && electron . --trace-warnings",
     "package": "electron-forge package",
     "make": "electron-forge make",
     "lint": "ng lint"
