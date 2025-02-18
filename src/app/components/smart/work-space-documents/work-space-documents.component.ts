@@ -2,11 +2,12 @@ import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { FieldComponent } from '../field/field.component';
+import { FileSelectorComponent } from '../file-selector/file-selector.component';
 
 @Component({
   selector: 'app-work-space-documents',
   templateUrl: './work-space-documents.component.html',
-  imports: [CommonModule, ReactiveFormsModule, FieldComponent],
+  imports: [CommonModule, ReactiveFormsModule, FieldComponent, FileSelectorComponent],
   styles: [':host { width: 100%; }'],
 })
 export class WorkSpaceDocumentsComponent {
@@ -49,8 +50,6 @@ export class WorkSpaceDocumentsComponent {
   }
 
   getControl(name: string) {
-    console.log('GET CONTROL', name);
-    console.log('FORM GROUP', this.formGroup.value);
     return this.formGroup.get(name) as FormControl;
   }
 }
