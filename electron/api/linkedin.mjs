@@ -1,4 +1,3 @@
-//const extract = require('extract-zip');
 import extract from 'extract-zip';
 import fs from 'fs';
 import path from 'path';
@@ -7,7 +6,7 @@ import Papa from 'papaparse';
 export const getUserFromLinkedinZip = async (zipPath) => {
   try {
     const targetPath = path.resolve('db/linkedin');
-    const response = await extract(zipPath, { dir: targetPath });
+    await extract(zipPath, { dir: targetPath });
     const documents = ['Profile', 'Positions', 'Skills'];
     const data = [];
     for (const document of documents) {
@@ -27,8 +26,3 @@ export const getUserFromLinkedinZip = async (zipPath) => {
     console.log('Error getting user from LinkedIn zip', error);
   }
 };
-
-const test = async () => {
-  await getUserFromLinkedinZip('/Users/pc/Downloads/linkedin.zip');
-};
-test();
