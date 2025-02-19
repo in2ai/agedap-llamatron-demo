@@ -1,12 +1,12 @@
-import path from "path";
-import { fileURLToPath } from "url";
-import { dirname } from "path";
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-import { app, BrowserWindow } from "electron";
-import { handleRunNodeCode } from "./api/node-functions.mjs";
+import { app, BrowserWindow } from 'electron';
+import { handleRunNodeCode } from './api/nodeFunctions.mjs';
 
 let mainWindow;
 
@@ -15,15 +15,13 @@ function createWindow() {
     width: 1280,
     height: 720,
     webPreferences: {
-      preload: path.join(__dirname, "preload.js"),
+      preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: true,
       contextIsolation: true,
     },
   });
 
-  mainWindow.loadFile(
-    path.join(__dirname, "../dist/agedap-llamatron/browser/index.html")
-  );
+  mainWindow.loadFile(path.join(__dirname, '../dist/agedap-llamatron/browser/index.html'));
 
   mainWindow.webContents.openDevTools();
 }

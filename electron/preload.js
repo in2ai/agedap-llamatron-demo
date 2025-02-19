@@ -1,16 +1,16 @@
-const { contextBridge, ipcRenderer } = require("electron");
+const { contextBridge, ipcRenderer } = require('electron');
 
-contextBridge.exposeInMainWorld("electronAPI", {
-  //runNodeCode: (data) => ipcRenderer.send("run-node-code", data),
+contextBridge.exposeInMainWorld('electronAPI', {
   runNodeCode: (data) => {
+    const { func } = data;
     return new Promise((resolve) => {
-      ipcRenderer.send("run-node-code", data);
-      ipcRenderer.once("node-code-response", (_, response) => {
+      ipcRenderer.send('runNodeCode', data);
+      ipcRenderer.once('onNodeCodeResponse', (_, response) => {
+        if (response.func !== func) return;
         resolve(response);
       });
     });
   },
-  onNodeCodeResponse: (callback) =>
-    ipcRenderer.on("node-code-response", callback),
-  onPartialResponse: (callback) => ipcRenderer.on("partial-response", callback),
+  onNodeCodeResponse: (callback) => ipcRenderer.on('onNodeCodeResponse', callback),
+  onPartialMessageResponse: (callback) => ipcRenderer.on('onPartialMessageResponse', callback),
 });

@@ -48,23 +48,3 @@ const workflow = new StateGraph(MessagesAnnotation)
   .addEdge('model', END);
 
 export const app = workflow.compile({ checkpointer: new MemorySaver() });
-
-/*const test = async () => {
-  await loadModel("C:\\Users\\adri2\\Desktop\\model.gguf");
-  const input = {
-    messages: [new HumanMessage("My name is Adrian")],
-  };
-  const output = await app.invoke(input, {
-    configurable: { thread_id: "chat_1" },
-    callbacks: [
-      {
-        handleCustomEvent(eventName, data, runId) {
-          if (eventName === "onTextChunk") {
-            console.log("HEY: ", data);
-          }
-        },
-      },
-    ],
-  });
-};
-test();*/
