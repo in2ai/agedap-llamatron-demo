@@ -12,7 +12,6 @@ import {
   newChat,
   newWorkspace,
   replaceChatMessages,
-  replaceMessages,
 } from './db.mjs';
 const controllers = new Map();
 
