@@ -8,6 +8,7 @@ import { FAKE_WORKSPACES, WorkSpace } from 'src/app/models';
 import { AgGridAngular } from 'ag-grid-angular';
 import type { CellClickedEvent, ColDef } from 'ag-grid-community';
 import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community';
+import { WorkSpaceTypeRendererComponent } from 'src/app/components/aggrid/work-space-type-renderer/work-space-type-renderer.component';
 import { isoStringToddMMYYYYhhmmss } from 'src/app/helpers/utils';
 
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -28,6 +29,7 @@ export class WorkSpaceComponent implements OnInit {
     {
       field: 'type',
       headerName: 'Tipo',
+      cellRenderer: WorkSpaceTypeRendererComponent,
     },
     { field: 'name', headerName: 'Nombre' },
     { field: 'description', headerName: 'Descripción' },
@@ -41,6 +43,7 @@ export class WorkSpaceComponent implements OnInit {
       headerName: 'Actualizado el',
       valueFormatter: (params) => isoStringToddMMYYYYhhmmss(params.value),
     },
+    { field: 'numChats', headerName: 'Nº Chats' },
   ];
   public defaultColDef: ColDef = {
     flex: 1,

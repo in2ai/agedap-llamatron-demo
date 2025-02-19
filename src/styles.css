@@ -26,6 +26,12 @@
   --color-secondaryButtonDisabledText: var(--color-slate-300);
 
   --spacing-sidebarW: '200px';
+
+  /* Chat */
+  --color-chatModelMessageBg: var(--color-slate-500);
+  --color-chatModelMessageText: var(--color-slate-50);
+  --color-chatUserMessageBg: var(--color-slate-50);
+  --color-chatUserMessageText: var(--color-slate-700);
 }
 
 a {
@@ -36,4 +42,22 @@ markdown {
   p {
     margin: 0;
   }
+}
+
+/* AgGrid related */
+.ag-header {
+  background-color: var(--color-slate-500);
+  color: var(--color-slate-200);
+}
+
+.ag-viewport {
+  background-color: var(--color-slate-300);
+}
+
+.ag-row-even {
+  background-color: var(--color-slate-300);
+}
+
+.ag-row-odd {
+  background-color: var(--color-slate-200);
 }
