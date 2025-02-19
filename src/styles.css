@@ -26,6 +26,12 @@
   --color-secondaryButtonDisabledText: var(--color-slate-300);
 
   --spacing-sidebarW: '200px';
+
+  /* Chat */
+  --color-chatModelMessageBg: var(--color-slate-500);
+  --color-chatModelMessageText: var(--color-slate-50);
+  --color-chatUserMessageBg: var(--color-slate-50);
+  --color-chatUserMessageText: var(--color-slate-700);
 }
 
 a {
