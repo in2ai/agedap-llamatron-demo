@@ -57,8 +57,20 @@ export class WorkSpaceComponent implements OnInit {
     this.recoverWorkSpaces();
   }
 
-  recoverWorkSpaces() {
+  async recoverWorkSpaces() {
     // TODO: Implement fetching saved workspaces
+
+    try {
+      const response = await (window as any).electronAPI.runNodeCode({
+        func: 'get_workspaces',
+        page: 1,
+        limit: 10,
+      });
+      console.log('//RECOVERED WORKSPACES: ', response);
+    } catch (error) {
+      console.log(error);
+    }
+
     this.workSpaces = FAKE_WORKSPACES;
   }
 
