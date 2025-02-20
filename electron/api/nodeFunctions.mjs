@@ -92,8 +92,8 @@ export function handleRunNodeCode() {
 
       //Workspaces
       case 'newWorkspace': {
-        const { type, name, description } = data;
-        const workspace = await newWorkspace(type, name, description);
+        const { type, name, description, documents, relayId } = data;
+        const workspace = await newWorkspace(type, name, description, documents, relayId);
         event.sender.send('onNodeCodeResponse', {
           func: 'newWorkspace',
           workspace,
