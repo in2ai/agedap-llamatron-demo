@@ -7,6 +7,7 @@ import { FieldComponent } from 'src/app/components/smart/field/field.component';
 import { SelectComponent, SelectOption } from 'src/app/components/smart/select/select.component';
 import { TextareaComponent } from 'src/app/components/smart/textarea/textarea.component';
 import { ButtonComponent } from 'src/app/components/ui/button/button.component';
+import { WorkSpace } from 'src/app/models';
 import { WorkSpaceDocumentsComponent } from '../../components/smart/work-space-documents/work-space-documents.component';
 
 @Component({
@@ -56,9 +57,32 @@ export class WorkSpaceNewComponent implements OnInit {
     return this.workSpaceForm.get(name) as FormControl;
   }
 
-  saveWorkSpace() {
+  async saveWorkSpace() {
     // TODO: API create new workspace and when id retreived navigate to /workspace/:id
     console.log('SAVE NEW WORKSPACE');
-    this.router.navigate(['/workspace/1']);
+    // this.router.navigate(['/workspace/1']);
+
+    const workspace: WorkSpace = {
+      name: this.getWorkSpaceControl('name').value,
+      description: this.getWorkSpaceControl('description').value,
+      type: this.getWorkSpaceControl('type').value,
+      numChats: 0,
+    };
+
+    console.log('workSpace: ', workspace);
+
+    try {
+      const response = await (window as any).electronAPI.runNodeCode({
+        func: 'newWorkspace',
+        workspace,
+      });
+      console.log('response: ', response);
+      const workspaceId = response.workspace.id;
+      this.router.navigate([`/workspace/${workspaceId}`]);
+
+      console.log('//NEW WORKSPACE: ', response);
+    } catch (error) {
+      console.log(error);
+    }
   }
 }

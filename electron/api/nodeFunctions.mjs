@@ -12,6 +12,8 @@ import {
   newChat,
   newWorkspace,
   replaceChatMessages,
+  startMongoServer,
+  stopMongoServer,
 } from './db.mjs';
 const controllers = new Map();
 
@@ -19,6 +21,8 @@ export function handleRunNodeCode() {
   ipcMain.on('runNodeCode', async (event, data) => {
     const { func } = data;
 
+    // TODO group related funciontions in external modules
+    // and here just call the functions
     switch (func) {
       //App
       case 'test': {
@@ -40,6 +44,9 @@ export function handleRunNodeCode() {
       }
 
       //Selección de archivos
+      // TODO: separate in two:
+      // - select file (already exists)
+      // - load model
       case 'selectModel': {
         const dialogResult = await dialog.showOpenDialog({
           properties: ['openFile'],

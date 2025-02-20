@@ -54,7 +54,7 @@ export class ConfigComponent implements OnInit {
     this.isSelectingModel = true;
     try {
       const response = await (window as any).electronAPI.runNodeCode({
-        func: 'select_model',
+        func: 'selectModel',
       });
       this.modelName = response.modelName;
       this.modelLoaded = true;

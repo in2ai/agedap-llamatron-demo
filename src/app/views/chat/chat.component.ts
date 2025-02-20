@@ -89,9 +89,9 @@ export class ChatComponent implements OnInit {
     try {
       this.generatingResponse = true;
       const response = await (window as any).electronAPI.runNodeCode({
-        func: 'send_message',
+        func: 'sendMessage',
         message: message,
-        id: this.chatId,
+        chatId: this.chatId,
       });
 
       this.messages = response.messages;
@@ -108,8 +108,8 @@ export class ChatComponent implements OnInit {
   async stopGeneratingResponse() {
     try {
       await (window as any).electronAPI.runNodeCode({
-        func: 'stop_generating_response',
-        chat_id: this.chatId,
+        func: 'stopGeneratingResponse',
+        chatId: this.chatId,
       });
     } catch (error) {
       console.log(error);

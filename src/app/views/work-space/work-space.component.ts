@@ -3,7 +3,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { ButtonComponent } from 'src/app/components/ui/button/button.component';
-import { FAKE_WORKSPACES, WorkSpace } from 'src/app/models';
+import { WorkSpace } from 'src/app/models';
 
 import { AgGridAngular } from 'ag-grid-angular';
 import type { CellClickedEvent, ColDef } from 'ag-grid-community';
@@ -57,9 +57,30 @@ export class WorkSpaceComponent implements OnInit {
     this.recoverWorkSpaces();
   }
 
-  recoverWorkSpaces() {
-    // TODO: Implement fetching saved workspaces
-    this.workSpaces = FAKE_WORKSPACES;
+  async recoverWorkSpaces() {
+    // TODO: Move workspàces queries to service
+    try {
+      const response = await (window as any).electronAPI.runNodeCode({
+        func: 'getWorkspaces',
+        page: 0,
+        limit: 10,
+      });
+      console.log('//RECOVERED WORKSPACES: ', response);
+      this.workSpaces = response.workspaces;
+    } catch (error) {
+      console.log(error);
+    }
+
+    try {
+      const response = await (window as any).electronAPI.runNodeCode({
+        func: 'getWorkspace',
+        workspaceId: '27f8d11b-fb0e-44f8-919e-1c632264695e',
+      });
+      console.log('//RECOVERED WORKSPACE: ', response);
+      this.workSpaces = response.workspaces;
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   createNewWorkSpace() {

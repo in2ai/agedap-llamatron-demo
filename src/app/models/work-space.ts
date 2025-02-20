@@ -3,12 +3,12 @@ export enum workSpaceTypeEnum {
   MISCELLANEOUS = 'miscellaneous',
 }
 export interface WorkSpace {
-  id: string; // UUID
+  id?: string; // UUID
   type: workSpaceTypeEnum.WORKOFFERS | workSpaceTypeEnum.MISCELLANEOUS;
   name: string;
   description?: string;
-  createdAt: string; // UTC ISO string
-  updatedAt: string; // UTC ISO string
+  createdAt?: string; // UTC ISO string
+  updatedAt?: string; // UTC ISO string
   numChats?: number;
 }
 
