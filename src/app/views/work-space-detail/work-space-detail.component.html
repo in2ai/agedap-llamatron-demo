@@ -6,7 +6,7 @@
 </app-drawer>
 
 <!-- Content -->
-<div class="flex flex-col w-full h-full">
+<div class="relative flex flex-col w-full h-full p-5">
   <div class="flex flex-col w-full h-full justify-center items-center text-slate-500">
     <div *ngIf="!workSpace" class="flex flex-col items-center">
       <i class="pi pi-spin pi-spinner text-4xl"></i>
@@ -19,7 +19,7 @@
       <header class="flex-none w-full font-bold pb-3 mb-3 border-b border-gray-400 border-dotted">
         <div class="flex flex-row justify-between items-center">
           <h1>
-            <i class="pi pi-comments pr-2"></i>Espacio de trabajo | {{ workSpace.name }}
+            <i class="pi pi-desktio pr-2"></i>Espacio de trabajo | {{ workSpace.name }}
             <i *ngIf="workSpace.createdAt"
               >| Created at {{ workSpace.createdAt | isoToLocalddMMYYYYhhmmss }}</i
             >
@@ -29,9 +29,63 @@
           </div>
         </div>
       </header>
-      <main class="flex flex-1 w-full h-full">
-        <app-chat *ngIf="selectedChatId" [chatId]="selectedChatId" />
-      </main>
+      <div class="flex flex-1 w-full h-full">
+        <!-- New chat overlay -->
+        <div *ngIf="isNewChatCreationVisible" class="absolute top-0 left-0 z-10 flex w-full h-full">
+          <div class="absolute z-10 flex w-full h-full">
+            <app-new-chat-creation
+              [workSpaceId]="workSpaceId"
+              (onClose)="hideNewChatCreation()"
+              (onCreate)="createNewChat($event)"
+            />
+          </div>
+          <div class="relative flex w-full h-full bg-white opacity-50"></div>
+        </div>
+        <!-- Not chat selected  -->
+        <div class="flex flex-1 w-full h-full" *ngIf="!selectedChatId">
+          <!-- Not chat created -->
+          <section
+            *ngIf="!chats || (chats && chats.length === 0)"
+            class="flex flex-col w-full h-full justify-center items-center"
+          >
+            <main class="flex flex-col gap-4 items-center">
+              <div><i class="!text-[40px] pi pi-comments text-slate-400"></i></div>
+              <p>No tienes ningún chat creado</p>
+              <app-button
+                (click)="showNewChatCreation()"
+                [label]="'CHAT.CREATE_CHAT' | translate"
+              />
+            </main>
+          </section>
+          <!-- Chats found -->
+          <section *ngIf="chats && chats.length > 0" class="flex flex-col w-full h-full">
+            <header>
+              <div class="flex flex-row justify-between items-center pb-4">
+                <h1 class="text-lg font-semibold">
+                  <i class="pi pi-comments pr-2"></i>
+                  <span>Mis chats</span>
+                </h1>
+                <app-button
+                  (click)="showNewChatCreation()"
+                  [label]="'CHAT.CREATE_CHAT' | translate"
+                  icon="plus"
+                />
+              </div>
+            </header>
+            <main class="flex flex-1">
+              <ag-grid-angular
+                style="width: 100%; height: 100%"
+                [rowData]="chats"
+                [columnDefs]="colDefs"
+                [defaultColDef]="defaultColDef"
+                (cellClicked)="onCellClicked($event)"
+              />
+            </main>
+          </section>
+          <!-- Chat selected -->
+          <app-chat *ngIf="selectedChatId" [chatId]="selectedChatId" />
+        </div>
+      </div>
     </div>
   </div>
 </div>

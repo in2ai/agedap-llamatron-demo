@@ -67,15 +67,14 @@ export class WorkSpaceService {
     }
   }
 
-  async deleteWorkSpace(id: string): Promise<WorkSpace> {
+  async deleteWorkSpace(workspaceId: string): Promise<string> {
     try {
       const response = await (window as any).electronAPI.runNodeCode({
         func: 'deleteWorkspace',
-        workspaceId: id,
+        workspaceId,
       });
       console.log('response: ', response);
-      const workspaceId = response.workspaceId;
-      return workspaceId;
+      return response.workspaceId;
     } catch (error) {
       throw new Error(`Error deleting workspace : ${error}`);
     }

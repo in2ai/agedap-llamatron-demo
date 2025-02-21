@@ -159,7 +159,8 @@
     "CREATE_WORKSPACE": "Crear espacio de trabajo"
   },
   "CHAT": {
-    "TITLE": "Chat"
+    "TITLE": "Chat",
+    "CREATE_CHAT": "Crear chat"
   },
   "404": {
     "TITLE": "404 - Página no encontrada",
@@ -184,6 +185,7 @@
     "OK": "Ok",
     "NONE": "None",
     "LOADING": "Cargando",
-    "MODEL_NOT_LOADED": "Modelo no cargado"
+    "MODEL_NOT_LOADED": "Modelo no cargado",
+    "CANCEL": "Cancelar"
   }
 }

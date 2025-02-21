@@ -5,13 +5,15 @@ import { TranslateModule } from '@ngx-translate/core';
 import { ButtonComponent } from 'src/app/components/ui/button/button.component';
 import { WorkSpace } from 'src/app/models';
 
-import { AgGridAngular } from 'ag-grid-angular';
-import type { CellClickedEvent, ColDef } from 'ag-grid-community';
-import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community';
 import { WorkSpaceDeleteRendererComponent } from 'src/app/components/aggrid/work-space-delete-renderer/work-space-delete-renderer.component';
 import { WorkSpaceTypeRendererComponent } from 'src/app/components/aggrid/work-space-type-renderer/work-space-type-renderer.component';
 import { isoStringToddMMYYYYhhmmss } from 'src/app/helpers/utils';
 import { WorkSpaceService } from 'src/app/service/work-space.service';
+
+// AG-Grid
+import { AgGridAngular } from 'ag-grid-angular';
+import type { CellClickedEvent, ColDef } from 'ag-grid-community';
+import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community';
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -22,12 +24,11 @@ ModuleRegistry.registerModules([AllCommunityModule]);
   imports: [CommonModule, ButtonComponent, TranslateModule, AgGridAngular],
 })
 export class WorkSpaceComponent implements OnInit {
-  constructor(private workSpaceService: WorkSpaceService) {}
-
   router = inject(Router);
 
-  // TODO: Implement ferching save workspaces
-  // public workSpaces: WorkSpace[] = [];
+  constructor(private workSpaceService: WorkSpaceService) {}
+
+  // Table configutation
   public workSpaces: WorkSpace[] = [];
   public colDefs: ColDef<WorkSpace>[] = [
     {
@@ -72,8 +73,14 @@ export class WorkSpaceComponent implements OnInit {
     return this.router.navigate(['/workspace', event.data.id]);
   };
 
+  // WorkSpace component initialization
   ngOnInit() {
     this.recoverWorkSpaces();
+  }
+
+  // WorkSpace component methods
+  createNewWorkSpace() {
+    this.router.navigate(['/workspace/new']);
   }
 
   async recoverWorkSpaces() {
@@ -82,10 +89,6 @@ export class WorkSpaceComponent implements OnInit {
     } catch (error) {
       console.log(error);
     }
-  }
-
-  createNewWorkSpace() {
-    this.router.navigate(['/workspace/new']);
   }
 
   async removeWorkSpace(workSpaceId: string) {
