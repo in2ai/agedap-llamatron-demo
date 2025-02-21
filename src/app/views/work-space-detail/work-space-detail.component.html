@@ -6,16 +6,32 @@
 </app-drawer>
 
 <!-- Content -->
-<div class="flex flex-col w-full h-full justify-start items-start text-slate-500">
-  <header class="flex-none w-full font-bold pb-3 mb-3 border-b border-gray-400 border-dotted">
-    <div class="flex flex-row justify-between items-center">
-      <h1><i class="pi pi-comments pr-2"></i>Espacio de trabajo | {{ workSpace.name }}</h1>
-      <div class="cursor-pointer" (click)="onToggleConfiguration()">
-        <i class="pi pi-cog p-2"></i>
-      </div>
+<div class="flex flex-col w-full h-full">
+  <div class="flex flex-col w-full h-full justify-center items-center text-slate-500">
+    <div *ngIf="!workSpace" class="flex flex-col items-center">
+      <i class="pi pi-spin pi-spinner text-4xl"></i>
+      <h1 class="text-xl">Cargando...</h1>
     </div>
-  </header>
-  <main class="flex flex-1 w-full h-full">
-    <app-chat />
-  </main>
+    <div
+      *ngIf="workSpace"
+      class="flex flex-col w-full h-full justify-start items-start text-slate-500"
+    >
+      <header class="flex-none w-full font-bold pb-3 mb-3 border-b border-gray-400 border-dotted">
+        <div class="flex flex-row justify-between items-center">
+          <h1>
+            <i class="pi pi-comments pr-2"></i>Espacio de trabajo | {{ workSpace.name }}
+            <i *ngIf="workSpace.createdAt"
+              >| Created at {{ workSpace.createdAt | isoToLocalddMMYYYYhhmmss }}</i
+            >
+          </h1>
+          <div class="cursor-pointer" (click)="onToggleConfiguration()">
+            <i class="pi pi-cog p-2"></i>
+          </div>
+        </div>
+      </header>
+      <main class="flex flex-1 w-full h-full">
+        <app-chat *ngIf="selectedChatId" [chatId]="selectedChatId" />
+      </main>
+    </div>
+  </div>
 </div>

@@ -8,6 +8,7 @@ import { SelectComponent, SelectOption } from 'src/app/components/smart/select/s
 import { TextareaComponent } from 'src/app/components/smart/textarea/textarea.component';
 import { ButtonComponent } from 'src/app/components/ui/button/button.component';
 import { WorkSpace } from 'src/app/models';
+import { WorkSpaceService } from 'src/app/service/work-space.service';
 import { WorkSpaceDocumentsComponent } from '../../components/smart/work-space-documents/work-space-documents.component';
 
 @Component({
@@ -32,7 +33,7 @@ export class WorkSpaceNewComponent implements OnInit {
   public workSpaceDocumentsForm!: FormGroup;
   public workSpaceTypes: SelectOption[] = [];
 
-  constructor() {}
+  constructor(private workSpaceService: WorkSpaceService) {}
 
   ngOnInit() {
     // Recover workspace types
@@ -62,25 +63,16 @@ export class WorkSpaceNewComponent implements OnInit {
     console.log('SAVE NEW WORKSPACE');
     // this.router.navigate(['/workspace/1']);
 
-    const workspace: WorkSpace = {
+    const workSpace: WorkSpace = {
       name: this.getWorkSpaceControl('name').value,
       description: this.getWorkSpaceControl('description').value,
       type: this.getWorkSpaceControl('type').value,
       numChats: 0,
     };
 
-    console.log('workSpace: ', workspace);
-
     try {
-      const response = await (window as any).electronAPI.runNodeCode({
-        func: 'newWorkspace',
-        workspace,
-      });
-      console.log('response: ', response);
-      const workspaceId = response.workspace.id;
-      this.router.navigate([`/workspace/${workspaceId}`]);
-
-      console.log('//NEW WORKSPACE: ', response);
+      const workSpaceId = await this.workSpaceService.createWorkSpace(workSpace);
+      this.router.navigate([`/workspace/${workSpaceId}`]);
     } catch (error) {
       console.log(error);
     }
