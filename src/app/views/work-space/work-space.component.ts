@@ -10,6 +10,7 @@ import type { CellClickedEvent, ColDef } from 'ag-grid-community';
 import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community';
 import { WorkSpaceTypeRendererComponent } from 'src/app/components/aggrid/work-space-type-renderer/work-space-type-renderer.component';
 import { isoStringToddMMYYYYhhmmss } from 'src/app/helpers/utils';
+import { WorkSpaceService } from 'src/app/service/work-space.service';
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -20,6 +21,8 @@ ModuleRegistry.registerModules([AllCommunityModule]);
   imports: [CommonModule, ButtonComponent, TranslateModule, AgGridAngular],
 })
 export class WorkSpaceComponent implements OnInit {
+  constructor(private workSpaceService: WorkSpaceService) {}
+
   router = inject(Router);
 
   // TODO: Implement ferching save workspaces
@@ -58,26 +61,8 @@ export class WorkSpaceComponent implements OnInit {
   }
 
   async recoverWorkSpaces() {
-    // TODO: Move workspàces queries to service
     try {
-      const response = await (window as any).electronAPI.runNodeCode({
-        func: 'getWorkspaces',
-        page: 0,
-        limit: 10,
-      });
-      console.log('//RECOVERED WORKSPACES: ', response);
-      this.workSpaces = response.workspaces;
-    } catch (error) {
-      console.log(error);
-    }
-
-    try {
-      const response = await (window as any).electronAPI.runNodeCode({
-        func: 'getWorkspace',
-        workspaceId: '27f8d11b-fb0e-44f8-919e-1c632264695e',
-      });
-      console.log('//RECOVERED WORKSPACE: ', response);
-      this.workSpaces = response.workspaces;
+      this.workSpaces = await this.workSpaceService.getWorkSpaces();
     } catch (error) {
       console.log(error);
     }

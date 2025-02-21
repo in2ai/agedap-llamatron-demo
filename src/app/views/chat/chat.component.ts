@@ -1,5 +1,5 @@
 import { CommonModule, NgFor } from '@angular/common';
-import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { MarkdownModule } from 'ngx-markdown';
@@ -17,6 +17,7 @@ type Message = {
   imports: [MarkdownModule, CommonModule, NgFor, ReactiveFormsModule, ButtonModule],
 })
 export class ChatComponent implements OnInit {
+  @Input()
   chatId = 'chat_1';
 
   @ViewChild('chat') chat!: ElementRef;
