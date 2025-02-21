@@ -50,6 +50,7 @@ markdown {
   color: var(--color-slate-200);
 }
 
+.ag-body,
 .ag-viewport {
   background-color: var(--color-slate-300);
 }
