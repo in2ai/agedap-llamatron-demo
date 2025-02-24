@@ -1,14 +1,14 @@
 <button
   type="button"
-  class="cursor-pointer px-3 py-2 font-normal text-base duration-200 ease-in-out transition-colors rounded-md flex flex-row justify-start items-center"
+  class="cursor-pointer px-3 py-2 font-normal text-base duration-200 ease-in-out transition-colors rounded-md flex flex-row justify-start items-center border"
   [ngClass]="
     isDisabled
       ? type === 'primary'
-        ? 'text-primaryButtonDisabledText bg-primaryButtonDisabledBg'
-        : 'text-secondaryButtonDisabledText bg-secondaryButtonDisabledBg'
+        ? 'border-primaryButtonDisabledBg text-primaryButtonDisabledText bg-primaryButtonDisabledBg'
+        : 'border-secondaryButtonDisabledBg text-secondaryButtonDisabledText bg-secondaryButtonDisabledBg'
       : type === 'primary'
-        ? 'text-primaryButtonText bg-primaryButtonBg hover:bg-primaryButtonBgHover hover:text-primaryButtonTextHover'
-        : 'text-secondaryButtonText bg-secondaryButtonBg hover:bg-secondaryButtonBgHover hover:text-secondaryButtonTextHover'
+        ? 'border-primaryButtonBg text-primaryButtonText bg-primaryButtonBg hover:bg-primaryButtonBgHover hover:text-primaryButtonTextHover'
+        : 'border-secondaryButtonText text-secondaryButtonText bg-secondaryButtonBg hover:bg-secondaryButtonBgHover hover:text-secondaryButtonTextHover'
   "
   [disabled]="isDisabled"
   (click)="onClickButton($event)"

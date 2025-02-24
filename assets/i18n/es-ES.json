@@ -183,6 +183,7 @@
     "NO": "No",
     "CURRENT_PAGE": "Página {currentPage} de {totalPages}",
     "OK": "Ok",
+    "ACCEPT": "Aceptar",
     "NONE": "None",
     "LOADING": "Cargando",
     "MODEL_NOT_LOADED": "Modelo no cargado",

@@ -14,6 +14,7 @@ import { WorkSpaceService } from 'src/app/service/work-space.service';
 import { AgGridAngular } from 'ag-grid-angular';
 import type { CellClickedEvent, ColDef } from 'ag-grid-community';
 import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community';
+import { ModalService } from 'src/app/service/modal.service';
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -26,7 +27,10 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 export class WorkSpaceComponent implements OnInit {
   router = inject(Router);
 
-  constructor(private workSpaceService: WorkSpaceService) {}
+  constructor(
+    private workSpaceService: WorkSpaceService,
+    private modalService: ModalService
+  ) {}
 
   // Table configutation
   public workSpaces: WorkSpace[] = [];
@@ -71,8 +75,7 @@ export class WorkSpaceComponent implements OnInit {
     const rowSelected = event.data;
 
     if (event.colDef.colId === 'removeAction') {
-      const workSpaceId = rowSelected.id;
-      return this.removeWorkSpace(workSpaceId);
+      return this.removeWorkSpace(rowSelected);
     }
 
     return this.router.navigate(['/workspace', event.data.id]);
@@ -96,7 +99,21 @@ export class WorkSpaceComponent implements OnInit {
     }
   }
 
-  async removeWorkSpace(workSpaceId: string) {
+  removeWorkSpace(workSpace: WorkSpace) {
+    this.modalService
+      .confirmModal(
+        'Eliminar espacio de trabajo',
+        `¿Está seguro de querer eliminar el espacio de trabajo "${workSpace.name}"?`
+      )
+      .then((result) => {
+        console.log('Modal result:', result);
+        if (result) {
+          if (workSpace.id) this.deleteWorkSpace(workSpace.id);
+        }
+      });
+  }
+
+  async deleteWorkSpace(workSpaceId: string) {
     try {
       const id = await this.workSpaceService.deleteWorkSpace(workSpaceId);
       console.log('WorkSpace removed: ', id);
