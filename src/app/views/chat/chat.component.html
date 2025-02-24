@@ -1,4 +1,7 @@
 <div class="flex flex-col justify-between w-full h-full">
+  <header *ngIf="chatId">
+    <h1>CHAT "{{ chatId }}"</h1>
+  </header>
   <ng-container *ngIf="!chatLoaded">
     <div class="flex w-full h-full justify-center items-center">
       <ng-container *ngIf="!errorMessage"
@@ -17,7 +20,7 @@
   </ng-container>
 
   <ng-container *ngIf="chatLoaded">
-    <div #chat class="flex flex-1 flex-col overflow-y-auto">
+    <div #chatRef class="flex flex-1 flex-col overflow-y-auto">
       <div
         *ngFor="let message of messages"
         [ngClass]="{

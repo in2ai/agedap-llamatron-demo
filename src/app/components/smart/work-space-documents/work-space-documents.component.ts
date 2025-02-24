@@ -18,7 +18,6 @@ export class WorkSpaceDocumentsComponent {
 
   @Input()
   set workSpaceType(workspaceType: string) {
-    console.log('SET WORKSPACE TYPE', workspaceType);
     this.selectedWorkSpaceType = workspaceType;
     // switch (workspaceType) {
     //   case 'workOffers':

@@ -25,7 +25,6 @@ export class WorkSpaceService {
         page: 0,
         limit: 10,
       });
-      console.log('response: ', response);
       const recoveredWorkSpaces: WorkSpace[] =
         response.workspaces?.map((ws: any) => {
           return {
@@ -52,7 +51,6 @@ export class WorkSpaceService {
         func: 'getWorkspace',
         workspaceId: id,
       });
-      console.log('//RECOVERED WORKSPACE: ', response);
       const ws = response.workspace;
       const recoveredWorkspace: WorkSpace = {
         id: ws.id,
@@ -65,7 +63,6 @@ export class WorkSpaceService {
         createdAt: ws.createdAt,
         updatedAt: ws.updatedAt,
       };
-      console.log('//RECOVERED WORKSPACE CLEAN: ', recoveredWorkspace);
       return recoveredWorkspace;
     } catch (error) {
       throw new Error(`Error getting workspace : ${error}`);
@@ -78,7 +75,6 @@ export class WorkSpaceService {
         func: 'deleteWorkspace',
         workspaceId,
       });
-      console.log('response: ', response);
       return response.workspaceId;
     } catch (error) {
       throw new Error(`Error deleting workspace : ${error}`);

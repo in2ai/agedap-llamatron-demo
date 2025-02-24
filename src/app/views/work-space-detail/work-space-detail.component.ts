@@ -60,12 +60,10 @@ export class WorkSpaceDetailComponent implements OnInit {
   ngOnInit(): void {
     this.workSpaceId = this.activatedRoute.snapshot.params['workSpaceId'] ?? '';
     this.chatId = this.activatedRoute.snapshot.params['chatId'] ?? '';
-    console.log('//CHAT ID: ', this.chatId);
     this.recoverWorkSpace();
   }
 
   async recoverWorkSpace() {
-    console.log('RECOVER CHATS FOR WORKSPACE: ', this.workSpaceId);
     if (!this.workSpaceId) return;
 
     try {
@@ -108,20 +106,18 @@ export class WorkSpaceDetailComponent implements OnInit {
     const chatSelected = event.data;
 
     if (event.colDef.colId === 'removeAction') {
-      this.removeChat(chatSelected);
+      return this.removeChat(chatSelected);
     }
 
-    this.router.navigate([`/workspace/${this.workSpaceId}/chat/${chatSelected.id}`]);
+    return this.router.navigate([`/workspace/${this.workSpaceId}/chat/${chatSelected.id}`]);
   };
 
   // WorkSpace component methods
   async createNewChat(chat: Chat) {
-    console.log('create new chat: ', chat);
     this.hideNewChatCreation();
     try {
-      const newChat = await this.chatService.createChat(chat);
+      await this.chatService.createChat(chat);
       // TODO: navigate to chat
-      console.log('new chat created: ', newChat);
       this.recoverChats();
     } catch (error) {
       console.log(error);
@@ -129,12 +125,9 @@ export class WorkSpaceDetailComponent implements OnInit {
   }
 
   async recoverChats() {
-    console.log('//1 recover chats | WORKSPACE: ', this.workSpaceId);
     if (!this.workSpaceId) return;
     try {
-      console.log('//2 try recovering chats');
       this.chats = await this.chatService.getChats(this.workSpaceId);
-      console.log('//4 chats recovered: ', this.chats);
     } catch (error) {
       console.log(error);
     }
@@ -144,7 +137,6 @@ export class WorkSpaceDetailComponent implements OnInit {
     this.modalService
       .confirmModal('Eliminar chat', `¿Está seguro de querer eliminar el chat "${chat.name}"?`)
       .then((result) => {
-        console.log('Modal result:', result);
         if (result) {
           if (chat.id) this.deleteChat(chat.id);
         }
@@ -153,8 +145,7 @@ export class WorkSpaceDetailComponent implements OnInit {
 
   async deleteChat(chatId: string) {
     try {
-      const id = await this.chatService.deleteChat(chatId);
-      console.log('chat removed: ', id);
+      await this.chatService.deleteChat(chatId);
       this.recoverChats();
     } catch (error) {
       console.log(error);

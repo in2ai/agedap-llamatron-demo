@@ -4,6 +4,8 @@ import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { MarkdownModule } from 'ngx-markdown';
 import { ButtonModule } from 'primeng/button';
+import { Chat } from 'src/app/models';
+import { ChatService } from 'src/app/service/chat.service';
 
 type Message = {
   type: 'user' | 'model';
@@ -17,10 +19,12 @@ type Message = {
   imports: [MarkdownModule, CommonModule, NgFor, ReactiveFormsModule, ButtonModule],
 })
 export class ChatComponent implements OnInit {
+  chat!: Chat;
+
   @Input()
   chatId = 'chat_1';
 
-  @ViewChild('chat') chat!: ElementRef;
+  @ViewChild('chatRef') chatRef!: ElementRef;
   public headerHeight: number = document.getElementById('header')?.offsetHeight || 0;
   public chatLoaded: boolean = false;
   public generatingResponse: boolean = false;
@@ -31,10 +35,22 @@ export class ChatComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private changeDetector: ChangeDetectorRef,
-    private translateService: TranslateService
+    private translateService: TranslateService,
+    private chatService: ChatService
   ) {}
 
   async ngOnInit() {
+    // Recover chat information
+    console.log('//CHAT ID: ', this.chatId);
+    try {
+      this.chat = await this.chatService.getChat(this.chatId);
+      console.log('//CHAT: ', this.chat);
+    } catch (error) {
+      console.log(error);
+    }
+
+    console.log('//CHAT: ', this.chat);
+    //
     this.form = this.fb.group({
       message: [''],
     });
@@ -66,7 +82,7 @@ export class ChatComponent implements OnInit {
           }
           console.log('//Messages: ', this.messages);
           this.changeDetector.detectChanges();
-          this.chat.nativeElement.scrollTop = this.chat.nativeElement.scrollHeight;
+          this.chatRef.nativeElement.scrollTop = this.chatRef.nativeElement.scrollHeight;
         } else if (data.func === 'stop_generating_response' && data.chat_id === this.chatId) {
           console.log('Stopped generating response');
           this.generatingResponse = false;
@@ -85,7 +101,7 @@ export class ChatComponent implements OnInit {
     if (!message) return;
     this.form.get('message')?.disable();
     this.messages.push({ type: 'user', message });
-    this.chat.nativeElement.scrollTop = this.chat.nativeElement.scrollHeight;
+    this.chatRef.nativeElement.scrollTop = this.chatRef.nativeElement.scrollHeight;
 
     try {
       this.generatingResponse = true;
@@ -97,7 +113,7 @@ export class ChatComponent implements OnInit {
 
       this.messages = response.messages;
       this.changeDetector.detectChanges();
-      this.chat.nativeElement.scrollTop = this.chat.nativeElement.scrollHeight;
+      this.chatRef.nativeElement.scrollTop = this.chatRef.nativeElement.scrollHeight;
     } catch (error) {
       console.log(error);
     } finally {
