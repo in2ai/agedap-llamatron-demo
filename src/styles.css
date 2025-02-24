@@ -6,6 +6,9 @@
   --color-mainContentBg: var(--color-slate-200);
   --color-mainContentText: var(--color-slate-900);
 
+  /* Border */
+  --color-greyBorder: var(--color-slate-300);
+
   /* Button */
   --color-primaryButtonBg: var(--color-slate-400);
   --color-primaryButtonText: var(--color-white);

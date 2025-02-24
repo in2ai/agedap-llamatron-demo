@@ -18,6 +18,7 @@ import { AgGridAngular } from 'ag-grid-angular';
 import type { CellClickedEvent, ColDef } from 'ag-grid-community';
 import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community';
 import { ChatService } from 'src/app/service/chat.service';
+import { ModalService } from 'src/app/service/modal.service';
 import { NewChatCreationComponent } from '../../components/smart/new-chat-creation/new-chat-creation.component';
 import { ButtonComponent } from '../../components/ui/button/button.component';
 
@@ -51,7 +52,8 @@ export class WorkSpaceDetailComponent implements OnInit {
 
   constructor(
     private workSpaceService: WorkSpaceService,
-    private chatService: ChatService
+    private chatService: ChatService,
+    private modalService: ModalService
   ) {}
 
   ngOnInit(): void {
@@ -103,8 +105,7 @@ export class WorkSpaceDetailComponent implements OnInit {
     const rowSelected = event.data;
 
     if (event.colDef.colId === 'removeAction') {
-      const chatId = rowSelected.id;
-      this.removeChat(chatId);
+      this.removeChat(rowSelected);
     }
   };
 
@@ -134,7 +135,18 @@ export class WorkSpaceDetailComponent implements OnInit {
     }
   }
 
-  async removeChat(chatId: string) {
+  removeChat(chat: Chat) {
+    this.modalService
+      .confirmModal('Eliminar chat', `¿Está seguro de querer eliminar el chat "${chat.name}"?`)
+      .then((result) => {
+        console.log('Modal result:', result);
+        if (result) {
+          if (chat.id) this.deleteChat(chat.id);
+        }
+      });
+  }
+
+  async deleteChat(chatId: string) {
     try {
       const id = await this.chatService.deleteChat(chatId);
       console.log('chat removed: ', id);
