@@ -33,9 +33,11 @@ export class WorkSpaceService {
             type: ws.type ?? '-',
             name: ws.name ?? '-',
             description: ws.description ?? '-',
+            relayId: ws.relayId ?? '-',
+            documents: ws.documents ?? '-',
+            chatIds: ws.chatIds ?? [],
             createdAt: ws.createdAt,
             updatedAt: ws.updatedAt,
-            numChats: 0,
           };
         }) ?? [];
       return recoveredWorkSpaces;
@@ -51,14 +53,17 @@ export class WorkSpaceService {
         workspaceId: id,
       });
       console.log('//RECOVERED WORKSPACE: ', response);
+      const ws = response.workspace;
       const recoveredWorkspace: WorkSpace = {
-        id: response.workspace.id,
-        type: response.workspace.type ?? '-',
-        name: response.workspace.name ?? '-',
-        description: response.workspace.description ?? '-',
-        createdAt: response.workspace.createdAt,
-        updatedAt: response.workspace.updatedAt,
-        numChats: 0,
+        id: ws.id,
+        type: ws.type ?? '-',
+        name: ws.name ?? '-',
+        description: ws.description ?? '-',
+        relayId: ws.relayId ?? '-',
+        documents: ws.documents ?? '-',
+        chatIds: ws.chatIds ?? [],
+        createdAt: ws.createdAt,
+        updatedAt: ws.updatedAt,
       };
       console.log('//RECOVERED WORKSPACE CLEAN: ', recoveredWorkspace);
       return recoveredWorkspace;

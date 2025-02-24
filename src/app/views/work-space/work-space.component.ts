@@ -48,7 +48,12 @@ export class WorkSpaceComponent implements OnInit {
       headerName: 'Actualizado el',
       valueFormatter: (params) => isoStringToddMMYYYYhhmmss(params.value),
     },
-    { field: 'numChats', headerName: 'Nº Chats' },
+    {
+      field: 'chatIds',
+      headerName: 'Nº Chats',
+
+      valueFormatter: (params) => params.value.length,
+    },
     {
       colId: 'removeAction',
       field: 'id',

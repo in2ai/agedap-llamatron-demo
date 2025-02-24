@@ -11,7 +11,7 @@ export interface WorkSpace {
   relayId?: string;
   createdAt?: string; // UTC ISO string
   updatedAt?: string; // UTC ISO string
-  numChats?: number;
+  chatIds?: string[]; // UUID[]
 }
 
 export const FAKE_WORKSPACES: WorkSpace[] = [
@@ -22,7 +22,7 @@ export const FAKE_WORKSPACES: WorkSpace[] = [
     description: 'Description of Workspace 1',
     createdAt: '2025-01-01T00:00:00Z',
     updatedAt: '2025-01-01T08:10:00Z',
-    numChats: 3,
+    chatIds: [],
   },
   {
     id: '2',
@@ -31,7 +31,7 @@ export const FAKE_WORKSPACES: WorkSpace[] = [
     description: 'Description of Workspace 2',
     createdAt: '2025-02-11T13:15:00Z',
     updatedAt: '2025-02-11T13:18:00Z',
-    numChats: 1,
+    chatIds: [],
   },
   {
     id: '3',
@@ -40,7 +40,7 @@ export const FAKE_WORKSPACES: WorkSpace[] = [
     description: 'Description of Workspace 3',
     createdAt: '2025-02-11T13:15:00Z',
     updatedAt: '2025-02-11T13:18:00Z',
-    numChats: 1,
+    chatIds: [],
   },
 
   {
@@ -50,7 +50,7 @@ export const FAKE_WORKSPACES: WorkSpace[] = [
     description: 'Description of Workspace 4',
     createdAt: '2025-01-11T13:15:00Z',
     updatedAt: '2025-01-11T13:18:00Z',
-    numChats: 1,
+    chatIds: [],
   },
 
   {
@@ -60,6 +60,6 @@ export const FAKE_WORKSPACES: WorkSpace[] = [
     description: 'Description of Workspace 5',
     createdAt: '2025-01-05T13:15:00Z',
     updatedAt: '2025-02-11T13:18:00Z',
-    numChats: 1,
+    chatIds: [],
   },
 ];

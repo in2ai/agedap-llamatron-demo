@@ -23,6 +23,7 @@ export async function newWorkspace(type, name, description, documents, relayId) 
     description,
     relayId,
     documents,
+    chatIds: [],
     createdAt: date,
     updatedAt: date,
   };
@@ -48,6 +49,12 @@ export async function deleteWorkspace(workspaceId) {
   const workspace = await getWorkspace(workspaceId);
   if (!workspace) throw new Error('Workspace no encontrado');
 
+  // Delete chats
+  const chatIds = workspace.chatIds;
+  chatIds.forEach(async (chatId) => {
+    await deleteChat(chatId);
+  });
+  // Delete workspace
   chatsDb.data = chatsDb.data.filter((c) => c.workspaceId !== workspaceId);
   await chatsDb.write();
 
@@ -86,7 +93,13 @@ export async function newChat(workspaceId, name, description) {
     createdAt: date,
     updatedAt: date,
   };
+  // Update chat
   await chatsDb.update((data) => data.push(chat));
+  // Update workspace
+  await workspacesDb.update((data) => {
+    const workspaceIndex = data.findIndex((w) => w.id === workspaceId);
+    data[workspaceIndex].chatIds.push(id);
+  });
   return chat;
 }
 
@@ -101,6 +114,17 @@ export async function getChat(chatId) {
 }
 
 export async function deleteChat(chatId) {
+  const chat = await getChat(chatId);
+  if (!chat) throw new Error('Chat no encontrado');
+
+  // Update workspace
+  workspacesDb.data = workspacesDb.data.map((w) => {
+    w.chatIds = w.chatIds.filter((cId) => cId !== chatId);
+    return w;
+  });
+  await workspacesDb.write();
+
+  // Delete chat
   chatsDb.data = chatsDb.data.filter((c) => c.id !== chatId);
   await chatsDb.write();
   return chatId;

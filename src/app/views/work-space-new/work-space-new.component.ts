@@ -69,7 +69,6 @@ export class WorkSpaceNewComponent implements OnInit {
       type: this.getWorkSpaceControl('type').value,
       relayId: this.workSpaceDocumentsForm.get('relayId')?.value,
       documents: this.workSpaceDocumentsForm.get('cvZip')?.value,
-      numChats: 0,
     };
 
     try {
