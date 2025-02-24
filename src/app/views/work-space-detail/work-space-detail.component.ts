@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { WorkSpaceDeleteRendererComponent } from 'src/app/components/aggrid/work-space-delete-renderer/work-space-delete-renderer.component';
 import { isoStringToddMMYYYYhhmmss } from 'src/app/helpers/utils';
@@ -41,10 +41,11 @@ ModuleRegistry.registerModules([AllCommunityModule]);
   ],
 })
 export class WorkSpaceDetailComponent implements OnInit {
+  router = inject(Router);
   activatedRoute = inject(ActivatedRoute);
 
   workSpaceId = '';
-  selectedChatId = '';
+  chatId = '';
   isNewChatCreationVisible = false;
 
   workSpace!: WorkSpace;
@@ -57,7 +58,9 @@ export class WorkSpaceDetailComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.workSpaceId = this.activatedRoute.snapshot.params['id'] ?? '';
+    this.workSpaceId = this.activatedRoute.snapshot.params['workSpaceId'] ?? '';
+    this.chatId = this.activatedRoute.snapshot.params['chatId'] ?? '';
+    console.log('//CHAT ID: ', this.chatId);
     this.recoverWorkSpace();
   }
 
@@ -102,11 +105,13 @@ export class WorkSpaceDetailComponent implements OnInit {
   };
 
   onCellClicked = (event: CellClickedEvent) => {
-    const rowSelected = event.data;
+    const chatSelected = event.data;
 
     if (event.colDef.colId === 'removeAction') {
-      this.removeChat(rowSelected);
+      this.removeChat(chatSelected);
     }
+
+    this.router.navigate([`/workspace/${this.workSpaceId}/chat/${chatSelected.id}`]);
   };
 
   // WorkSpace component methods

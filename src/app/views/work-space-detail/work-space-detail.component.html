@@ -42,7 +42,7 @@
           <div class="relative flex w-full h-full bg-white opacity-50"></div>
         </div>
         <!-- Not chat selected  -->
-        <div class="flex flex-1 w-full h-full" *ngIf="!selectedChatId">
+        <div class="flex flex-1 w-full h-full" *ngIf="!chatId">
           <!-- Not chat created -->
           <section
             *ngIf="!chats || (chats && chats.length === 0)"
@@ -82,8 +82,12 @@
               />
             </main>
           </section>
-          <!-- Chat selected -->
-          <app-chat *ngIf="selectedChatId" [chatId]="selectedChatId" />
+        </div>
+        <!-- Chat selected -->
+        <div class="flex flex-1 w-full h-full" *ngIf="chatId">
+          <section class="flex flex-col w-full h-full">
+            <app-chat [chatId]="chatId" />
+          </section>
         </div>
       </div>
     </div>

@@ -25,7 +25,11 @@ export const routes: Routes = [
     component: WorkSpaceNewComponent,
   },
   {
-    path: 'workspace/:id',
+    path: 'workspace/:workSpaceId',
+    component: WorkSpaceDetailComponent,
+  },
+  {
+    path: 'workspace/:workSpaceId/chat/:chatId',
     component: WorkSpaceDetailComponent,
   },
   {

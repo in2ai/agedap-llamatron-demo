@@ -59,10 +59,6 @@ export class WorkSpaceNewComponent implements OnInit {
   }
 
   async saveWorkSpace() {
-    // TODO: API create new workspace and when id retreived navigate to /workspace/:id
-    console.log('SAVE NEW WORKSPACE');
-    // this.router.navigate(['/workspace/1']);
-
     const workSpace: WorkSpace = {
       name: this.getWorkSpaceControl('name').value,
       description: this.getWorkSpaceControl('description').value,
