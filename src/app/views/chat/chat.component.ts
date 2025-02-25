@@ -97,6 +97,13 @@ export class ChatComponent implements OnInit {
         func: 'loadChat',
         chatId: this.chatId,
       });
+      //Pintar mensajes
+      if (response.messages.length > 0) {
+        this.messages = response.messages;
+        this.changeDetector.detectChanges();
+        this.chatRef.nativeElement.scrollTop = this.chatRef.nativeElement.scrollHeight;
+      }
+
       console.log('//RESPONSE LOAD CHAT: ', response);
       this.activateChat();
     } catch (error) {
@@ -107,7 +114,7 @@ export class ChatComponent implements OnInit {
   activateChat() {
     console.log('//4- ACTIVATE CHAT');
     (window as any).electronAPI.onPartialMessageResponse((event: any, data: any) => {
-      if (data.func === 'partial-response' && data.chat_id === this.chatId) {
+      if (data.func === 'onPartialMessageResponse' && data.chatId === this.chatId) {
         const newContent = data.content;
         //if last message is from model, update it else add new message
         if (this.messages.length > 0) {

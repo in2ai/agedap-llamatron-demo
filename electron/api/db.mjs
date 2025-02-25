@@ -27,21 +27,25 @@ export async function newWorkspace(type, name, description, documents, relayId) 
     createdAt: date,
     updatedAt: date,
   };
+  await workspacesDb.read();
   await workspacesDb.update((data) => data.push(workspace));
   return workspace;
 }
 
 export async function getAllWorkspaces() {
+  await workspacesDb.read();
   return workspacesDb.data;
 }
 
 export async function getWorkspaces(page, limit) {
   page -= 1;
   if (page < 0) page = 0;
+  await workspacesDb.read();
   return workspacesDb.data.slice(page * limit, (page + 1) * limit);
 }
 
 export async function getWorkspace(workspaceId) {
+  await workspacesDb.read();
   return workspacesDb.data.find((w) => w.id === workspaceId);
 }
 
@@ -50,14 +54,11 @@ export async function deleteWorkspace(workspaceId) {
   if (!workspace) throw new Error('Workspace no encontrado');
 
   // Delete chats
-  const chatIds = workspace.chatIds;
-  chatIds.forEach(async (chatId) => {
-    await deleteChat(chatId);
-  });
-  // Delete workspace
+  await chatsDb.read();
   chatsDb.data = chatsDb.data.filter((c) => c.workspaceId !== workspaceId);
   await chatsDb.write();
 
+  await workspacesDb.read();
   workspacesDb.data = workspacesDb.data.filter((w) => w.id !== workspaceId);
   await workspacesDb.write();
   return workspace.id;
@@ -73,6 +74,7 @@ export async function editWorkspace(workspaceId, name, description, documents, r
   workspace.relayId = relayId;
   workspace.updatedAt = new Date();
 
+  await workspacesDb.read();
   await workspacesDb.update((data) => {
     const workspaceIndex = data.findIndex((w) => w.id === workspaceId);
     data[workspaceIndex] = workspace;
@@ -94,8 +96,10 @@ export async function newChat(workspaceId, name, description) {
     updatedAt: date,
   };
   // Update chat
+  await chatsDb.read();
   await chatsDb.update((data) => data.push(chat));
   // Update workspace
+  await workspacesDb.read();
   await workspacesDb.update((data) => {
     const workspaceIndex = data.findIndex((w) => w.id === workspaceId);
     data[workspaceIndex].chatIds.push(id);
@@ -104,13 +108,22 @@ export async function newChat(workspaceId, name, description) {
 }
 
 export async function getChats(workspaceId) {
+  await chatsDb.read();
   const chats = chatsDb.data.filter((c) => c.workspaceId === workspaceId);
   chats.forEach((c) => delete c.messages);
   return chats;
 }
 
 export async function getChat(chatId) {
+  await chatsDb.read();
   return chatsDb.data.find((c) => c.id === chatId);
+}
+
+export async function getChatMessages(chatId) {
+  await chatsDb.read();
+  const chat = chatsDb.data.find((c) => c.id === chatId);
+  if (!chat) throw new Error('Chat no encontrado');
+  return chat.messages || [];
 }
 
 export async function deleteChat(chatId) {
@@ -118,6 +131,7 @@ export async function deleteChat(chatId) {
   if (!chat) throw new Error('Chat no encontrado');
 
   // Update workspace
+  await workspacesDb.read();
   workspacesDb.data = workspacesDb.data.map((w) => {
     w.chatIds = w.chatIds.filter((cId) => cId !== chatId);
     return w;
@@ -125,6 +139,7 @@ export async function deleteChat(chatId) {
   await workspacesDb.write();
 
   // Delete chat
+  await chatsDb.read();
   chatsDb.data = chatsDb.data.filter((c) => c.id !== chatId);
   await chatsDb.write();
   return chatId;
@@ -138,6 +153,7 @@ export async function addChatMessage(chatId, message, type) {
   const date = new Date();
   const newMessage = { id: messageId, message, type, createdAt: date, updatedAt: date };
 
+  await chatsDb.read();
   await chatsDb.update((data) => {
     const chatIndex = data.findIndex((c) => c.id === chatId);
     data[chatIndex].messages.push(newMessage);
@@ -149,6 +165,7 @@ export async function deleteChatMessage(chatId, messageId) {
   const chat = await getChat(chatId);
   if (!chat) throw new Error('Chat no encontrado');
 
+  await chatsDb.read();
   await chatsDb.update((data) => {
     const chatIndex = data.findIndex((c) => c.id === chatId);
     data[chatIndex].messages = data[chatIndex].messages.filter((m) => m.id !== messageId);
@@ -167,6 +184,7 @@ export async function editChatMessage(chatId, messageId, message, type) {
   msg.type = type;
   msg.updatedAt = new Date();
 
+  await chatsDb.read();
   await chatsDb.update((data) => {
     const chatIndex = data.findIndex((c) => c.id === chatId);
     const msgIndex = data[chatIndex].messages.findIndex((m) => m.id === messageId);
@@ -179,6 +197,7 @@ export async function replaceChatMessages(chatId, newMessages) {
   const chat = await getChat(chatId);
   if (!chat) throw new Error('Chat no encontrado');
 
+  await chatsDb.read();
   await chatsDb.update((data) => {
     const chatIndex = data.findIndex((c) => c.id === chatId);
     data[chatIndex].messages = newMessages;

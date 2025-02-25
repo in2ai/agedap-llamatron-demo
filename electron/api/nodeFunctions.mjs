@@ -1,11 +1,12 @@
 import { ipcMain } from 'electron';
 import { dialog } from 'electron';
 import { app, loadModel, modelPath } from './langchain.mjs';
-import { HumanMessage } from '@langchain/core/messages';
+import { AIMessage, HumanMessage, SystemMessage } from '@langchain/core/messages';
 import {
   deleteChat,
   deleteWorkspace,
   getChat,
+  getChatMessages,
   getChats,
   getWorkspace,
   getWorkspaces,
@@ -13,6 +14,7 @@ import {
   newWorkspace,
   replaceChatMessages,
 } from './db.mjs';
+import { RELAY_LIST } from './relays.mjs';
 const controllers = new Map();
 
 export function handleRunNodeCode() {
@@ -170,50 +172,32 @@ export function handleRunNodeCode() {
       case 'loadChat': {
         const { chatId } = data;
         const chat = await getChat(chatId);
-        const loadedMessages =
-          chat.messages?.map((msg) => {
-            return {
-              role: msg.type === 'user' ? 'user' : 'assistant',
-              message: msg.content,
-            };
-          }) ?? [];
-
-        const config = { configurable: { thread_id: chatId } };
-        const input = { loadedMessages };
-        const response = await app.invoke(input, config);
-
-        let messages = [];
-        response.messages.forEach((msg) => {
-          if (msg instanceof HumanMessage) {
-            messages.push({
-              type: 'user',
-              message: msg.content,
-            });
-          } else {
-            messages.push({
-              type: 'model',
-              message: msg.content,
-            });
-          }
-        });
+        const loadedMessages = chat.messages || [];
 
         event.sender.send('onNodeCodeResponse', {
           func: 'loadChat',
           chatId,
-          messages,
+          messages: loadedMessages,
         });
         break;
       }
 
       case 'sendMessage': {
         const { chatId, message } = data;
+        const chatMessages = await getChatMessages(chatId);
+        const chatHistory = [];
+        chatMessages.forEach((msg) => {
+          if (msg.type === 'user') {
+            chatHistory.push(new HumanMessage(msg.message));
+          } else if (msg.type === 'model') {
+            chatHistory.push(new AIMessage(msg.message));
+          } else {
+            chatHistory.push(new SystemMessage(msg.message));
+          }
+        });
+
         const input = {
-          messages: [
-            {
-              role: 'user',
-              content: message,
-            },
-          ],
+          messages: [...chatHistory, new HumanMessage(message)],
         };
 
         const controller = new AbortController();
@@ -239,6 +223,7 @@ export function handleRunNodeCode() {
         };
 
         const response = await app.invoke(input, config);
+        console.log('Response:', response);
 
         let messages = [];
         response.messages.forEach((msg) => {
