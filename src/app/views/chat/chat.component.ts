@@ -10,7 +10,7 @@ import { ChatService } from 'src/app/service/chat.service';
 import { ButtonComponent } from '../../components/ui/button/button.component';
 
 type Message = {
-  type: 'user' | 'model';
+  type: 'user' | 'model' | 'system' | 'external';
   message: string;
 };
 
@@ -140,7 +140,7 @@ export class ChatComponent implements OnInit {
       console.log('//NEW EXTERNAL MESSAGE: ', data);
       if (data.func === 'onNewExternalMessage' && data.chatId === this.chatId) {
         const { content } = data;
-        this.messages.push({ type: 'model', message: content });
+        this.messages.push({ type: 'external', message: content });
         this.changeDetector.detectChanges();
         this.chatRef.nativeElement.scrollTop = this.chatRef.nativeElement.scrollHeight;
       }
@@ -159,13 +159,16 @@ export class ChatComponent implements OnInit {
 
     try {
       this.generatingResponse = true;
-      const response = await (window as any).electronAPI.runNodeCode({
+      await (window as any).electronAPI.runNodeCode({
         func: 'sendMessage',
         message: message,
         chatId: this.chatId,
       });
 
-      this.messages = response.messages;
+      /*
+      ya viene en partialMessageResponse
+      const responseMessage = response.content;
+      this.messages.push({ type: 'model', message: responseMessage });*/
       this.changeDetector.detectChanges();
       this.chatRef.nativeElement.scrollTop = this.chatRef.nativeElement.scrollHeight;
     } catch (error) {

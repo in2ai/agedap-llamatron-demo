@@ -32,7 +32,8 @@
         *ngFor="let message of messages"
         [ngClass]="{
           'justify-end': message.type === 'user',
-          'justify-start': message.type === 'model',
+          'justify-start':
+            message.type === 'model' || message.type === 'system' || message.type === 'external',
         }"
         class="flex w-full mb-2"
       >
@@ -40,9 +41,11 @@
           class="max-w-[80%] p-3 font-semibold rounded-lg"
           [ngClass]="{
             'bg-chatUserMessageBg text-chatUserMessageText': message.type === 'user',
-            'bg-chatModelMessageBg text-chatModelMessageText': message.type === 'model',
+            'bg-chatModelMessageBg text-chatModelMessageText':
+              message.type === 'model' || message.type === 'system' || message.type === 'external',
             'rounded-br-none': message.type === 'user',
-            'rounded-bl-none': message.type === 'model',
+            'rounded-bl-none':
+              message.type === 'model' || message.type === 'system' || message.type === 'external',
           }"
         >
           <markdown [data]="message.message" class="text-sm block"></markdown>

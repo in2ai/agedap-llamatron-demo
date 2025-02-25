@@ -4,7 +4,8 @@ import { getWorkOffers } from '../../relay.mjs';
 import { RELAY_LIST } from '../../relays.mjs';
 import { computeSimilarity } from './cvMatching.mjs';
 
-const checkInterval = 1000 * 60 * 5; // 5 minutes
+const checkInterval = 300000; // 5 minutes
+const similarityThreshold = 0.43;
 
 let chatController = undefined;
 let userCv = null;
@@ -78,6 +79,7 @@ export async function workOffersService(theChatController) {
 }
 
 async function checkWorkOffers() {
+  console.log('Checking work offers...');
   const { workspace, event } = chatController;
   const relay = RELAY_LIST.find((r) => r.id === workspace.relayId);
 
@@ -92,8 +94,7 @@ async function checkWorkOffers() {
       const similarity = response.overallSimilarity;
       workOffer.similarity = similarity;
 
-      if (similarity > 0.43) {
-        console.log('Oferta de trabajo encontrada:', workOffer);
+      if (similarity > similarityThreshold) {
         const message = `Hemos encontrado una oferta de trabajo que podría interesarte:
         <br/><br/>
         **Título:** ${workOffer.title}<br/>
@@ -113,7 +114,7 @@ async function checkWorkOffers() {
 
 async function sendMessage(message) {
   const { chat, event } = chatController;
-  await addChatMessage(chat.id, message, 'model');
+  await addChatMessage(chat.id, message, 'external');
   event.sender.send('onNewExternalMessage', {
     func: 'onNewExternalMessage',
     chatId: chat.id,
