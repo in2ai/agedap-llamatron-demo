@@ -2,12 +2,17 @@ export enum workSpaceTypeEnum {
   WORKOFFERS = 'workOffers',
   MISCELLANEOUS = 'miscellaneous',
 }
+
+interface Document {
+  type: 'linkedin' | 'others';
+  path: string;
+}
 export interface WorkSpace {
   id?: string; // UUID
   type: workSpaceTypeEnum.WORKOFFERS | workSpaceTypeEnum.MISCELLANEOUS;
   name: string;
   description?: string;
-  documents?: string;
+  documents?: Document[];
   relayId?: string;
   createdAt?: string; // UTC ISO string
   updatedAt?: string; // UTC ISO string

@@ -64,7 +64,12 @@ export class WorkSpaceNewComponent implements OnInit {
       description: this.getWorkSpaceControl('description').value,
       type: this.getWorkSpaceControl('type').value,
       relayId: this.workSpaceDocumentsForm.get('relayId')?.value,
-      documents: this.workSpaceDocumentsForm.get('cvZip')?.value,
+      documents: [
+        {
+          type: 'linkedin',
+          path: this.workSpaceDocumentsForm.get('cvZip')?.value,
+        },
+      ],
     };
 
     try {
