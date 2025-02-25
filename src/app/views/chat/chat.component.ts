@@ -60,7 +60,7 @@ export class ChatComponent implements OnInit {
 
       // Initialize chat form
       this.form = this.fb.group({
-        message: this.chat ?? [''],
+        message: [''],
       });
 
       // Check model
