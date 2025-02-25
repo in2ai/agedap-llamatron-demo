@@ -15,10 +15,17 @@ export const loadModel = async (path) => {
   });
 };
 
-const promptTemplate = ChatPromptTemplate.fromMessages([
-  ['system', 'You are a helpful assistant. You can use markdown.'],
+let promptTemplate = ChatPromptTemplate.fromMessages([
+  ['system', 'Eres un asistente amable. Puedes usar markdown para responder.'],
   ['placeholder', '{messages}'],
 ]);
+
+export const changePromptTemplate = async (prompt) => {
+  promptTemplate = ChatPromptTemplate.fromMessages([
+    ['system', prompt],
+    ['placeholder', '{messages}'],
+  ]);
+};
 
 const trimmer = trimMessages({
   maxTokens: CONTEXT_SIZE - 128,

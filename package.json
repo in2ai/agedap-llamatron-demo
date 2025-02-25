@@ -28,6 +28,7 @@
     "@angular/platform-browser-dynamic": "^19.1.5",
     "@angular/router": "^19.1.5",
     "@colsen1991/ngx-translate-extract-marker": "^3.0.1",
+    "@huggingface/transformers": "^3.3.3",
     "@langchain/community": "^0.3.26",
     "@langchain/core": "^0.3.33",
     "@langchain/langgraph": "^0.2.39",

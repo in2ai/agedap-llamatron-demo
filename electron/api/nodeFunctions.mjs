@@ -1,6 +1,6 @@
 import { ipcMain } from 'electron';
 import { dialog } from 'electron';
-import { app, loadModel, modelPath } from './langchain.mjs';
+import { app, changePromptTemplate, loadModel, modelPath } from './langchain.mjs';
 import { AIMessage, HumanMessage, SystemMessage } from '@langchain/core/messages';
 import {
   deleteChat,
@@ -15,6 +15,7 @@ import {
   replaceChatMessages,
 } from './db.mjs';
 import { RELAY_LIST } from './relays.mjs';
+import { startChatService, stopChatService } from './service/index.mjs';
 const controllers = new Map();
 
 export function handleRunNodeCode() {
@@ -172,12 +173,38 @@ export function handleRunNodeCode() {
       case 'loadChat': {
         const { chatId } = data;
         const chat = await getChat(chatId);
+        const workspace = await getWorkspace(chat.workspaceId);
+        switch (workspace.type) {
+          case 'workOffers': {
+            changePromptTemplate(
+              'Eres un asistente de ofertas de trabajo. Recibirás los datos del curriculum del usuario y las ofertas de trabajo disponibles que ya se han filtrado por su perfil y deberían ser de su interés.'
+            );
+            break;
+          }
+          default: {
+            changePromptTemplate('Eres un asistente amable. Puedes usar markdown para responder.');
+            break;
+          }
+        }
+
         const loadedMessages = chat.messages || [];
 
         event.sender.send('onNodeCodeResponse', {
           func: 'loadChat',
           chatId,
           messages: loadedMessages,
+        });
+
+        startChatService(event, chat);
+        break;
+      }
+
+      case 'unloadChat': {
+        const { chatId } = data;
+        stopChatService();
+        event.sender.send('onNodeCodeResponse', {
+          func: 'unloadChat',
+          chatId,
         });
         break;
       }

@@ -24,5 +24,6 @@ export const getUserFromLinkedinZip = async (zipPath) => {
     return data;
   } catch (error) {
     console.log('Error getting user from LinkedIn zip', error);
+    return null;
   }
 };

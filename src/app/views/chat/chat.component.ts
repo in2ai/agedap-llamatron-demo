@@ -135,6 +135,16 @@ export class ChatComponent implements OnInit {
         this.form.get('message')?.enable();
       }
     });
+
+    (window as any).electronAPI.onNewExternalMessage((event: any, data: any) => {
+      console.log('//NEW EXTERNAL MESSAGE: ', data);
+      if (data.func === 'onNewExternalMessage' && data.chatId === this.chatId) {
+        const { content } = data;
+        this.messages.push({ type: 'model', message: content });
+        this.changeDetector.detectChanges();
+        this.chatRef.nativeElement.scrollTop = this.chatRef.nativeElement.scrollHeight;
+      }
+    });
   }
 
   // Chat interaction
@@ -178,7 +188,11 @@ export class ChatComponent implements OnInit {
   }
 
   // Interface
-  onBackToWorkspaceHandler() {
+  async onBackToWorkspaceHandler() {
+    await (window as any).electronAPI.runNodeCode({
+      func: 'unloadChat',
+      chatId: this.chatId,
+    });
     this.router.navigate([`/workspace/${this.chat.workspaceId}`]);
   }
 }
