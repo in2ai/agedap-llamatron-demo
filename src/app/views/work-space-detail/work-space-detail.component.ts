@@ -10,7 +10,6 @@ import { IsoToLocalddMMYYYYhhmmssPipe } from 'src/app/pipes/iso-to-localdd-mmyyy
 import { WorkSpaceService } from 'src/app/service/work-space.service';
 import { DrawerComponent } from '../../components/smart/drawer/drawer.component';
 import { WorkSpaceDocumentsComponent } from '../../components/smart/work-space-documents/work-space-documents.component';
-import { ChatComponent } from '../chat/chat.component';
 
 // AG-Grid
 import { TranslateModule } from '@ngx-translate/core';
@@ -29,7 +28,6 @@ ModuleRegistry.registerModules([AllCommunityModule]);
   templateUrl: './work-space-detail.component.html',
   styles: [':host { width: 100%; }'],
   imports: [
-    ChatComponent,
     DrawerComponent,
     WorkSpaceDocumentsComponent,
     IsoToLocalddMMYYYYhhmmssPipe,

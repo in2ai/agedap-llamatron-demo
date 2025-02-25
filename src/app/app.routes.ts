@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { TitleResolver } from './service/title.resolver';
+import { ChatComponent } from './views/chat/chat.component';
 import { ConfigComponent } from './views/config/config.component';
 import { PageNotFoundComponent } from './views/page-not-found/page-not-found.component';
 import { WorkSpaceDetailComponent } from './views/work-space-detail/work-space-detail.component';
@@ -30,7 +31,7 @@ export const routes: Routes = [
   },
   {
     path: 'workspace/:workSpaceId/chat/:chatId',
-    component: WorkSpaceDetailComponent,
+    component: ChatComponent,
   },
   {
     path: '**',

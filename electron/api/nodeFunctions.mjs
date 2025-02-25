@@ -170,12 +170,13 @@ export function handleRunNodeCode() {
       case 'loadChat': {
         const { chatId } = data;
         const chat = await getChat(chatId);
-        const loadedMessages = chat.messages.map((msg) => {
-          return {
-            role: msg.type === 'user' ? 'user' : 'assistant',
-            message: msg.content,
-          };
-        });
+        const loadedMessages =
+          chat.messages?.map((msg) => {
+            return {
+              role: msg.type === 'user' ? 'user' : 'assistant',
+              message: msg.content,
+            };
+          }) ?? [];
 
         const config = { configurable: { thread_id: chatId } };
         const input = { loadedMessages };
@@ -203,6 +204,7 @@ export function handleRunNodeCode() {
         });
         break;
       }
+
       case 'sendMessage': {
         const { chatId, message } = data;
         const input = {

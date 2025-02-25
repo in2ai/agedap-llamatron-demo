@@ -187,6 +187,7 @@
     "NONE": "None",
     "LOADING": "Cargando",
     "MODEL_NOT_LOADED": "Modelo no cargado",
-    "CANCEL": "Cancelar"
+    "CANCEL": "Cancelar",
+    "BACK": "Volver"
   }
 }

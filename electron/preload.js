@@ -11,6 +11,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
       });
     });
   },
+
   onNodeCodeResponse: (callback) => ipcRenderer.on('onNodeCodeResponse', callback),
+
   onPartialMessageResponse: (callback) => ipcRenderer.on('onPartialMessageResponse', callback),
 });
