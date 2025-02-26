@@ -6,7 +6,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { WorkSpaceDeleteRendererComponent } from 'src/app/components/aggrid/work-space-delete-renderer/work-space-delete-renderer.component';
 import { isoStringToddMMYYYYhhmmss } from 'src/app/helpers/utils';
 import { Chat, WorkSpace } from 'src/app/models';
-import { IsoToLocalddMMYYYYhhmmssPipe } from 'src/app/pipes/iso-to-localdd-mmyyyyhhmmss.pipe';
 import { WorkSpaceService } from 'src/app/service/work-space.service';
 import { DrawerComponent } from '../../components/smart/drawer/drawer.component';
 import { WorkSpaceDocumentsComponent } from '../../components/smart/work-space-documents/work-space-documents.component';
@@ -31,7 +30,6 @@ ModuleRegistry.registerModules([AllCommunityModule]);
   imports: [
     DrawerComponent,
     WorkSpaceDocumentsComponent,
-    IsoToLocalddMMYYYYhhmmssPipe,
     CommonModule,
     AgGridAngular,
     ButtonComponent,
@@ -173,5 +171,13 @@ export class WorkSpaceDetailComponent implements OnInit {
   });
   onToggleConfiguration(): void {
     this.showConfiguration = !this.showConfiguration;
+  }
+
+  onBackToChats(): void {
+    this.chatId = '';
+  }
+
+  onBackToWorkSpaces(): void {
+    this.router.navigate(['/workspace']);
   }
 }

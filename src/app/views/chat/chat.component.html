@@ -21,9 +21,9 @@
       <div class="flex flex-row justify-start items-center pb-4">
         <h1 class="text-lg font-semibold">
           <i class="pi pi-comments pr-2"></i>
-          <span>Mis chats </span>
+          <span>Chats </span>
         </h1>
-        <span>| {{ chat.name }}</span>
+        <span class="pl-2 font-bold">| "{{ chat.name }}"</span>
       </div>
     </header>
     <div #chatRef class="flex flex-1 flex-col overflow-y-auto">
@@ -37,7 +37,7 @@
         class="flex w-full mb-2"
       >
         <div
-          class="max-w-[80%] p-3 font-semibold rounded-lg"
+          class="max-w-[80%] p-5 text-base/6 rounded-lg"
           [ngClass]="{
             'bg-chatUserMessageBg text-chatUserMessageText': message.type === 'user',
             'bg-chatModelMessageBg text-chatModelMessageText':
@@ -47,8 +47,11 @@
               message.type === 'model' || message.type === 'system' || message.type === 'external',
           }"
         >
-          <markdown [data]="message.message" class="text-sm block"></markdown>
-          <small class="text-xs block mt-1 italic text-right opacity-75">{{ message.type }}</small>
+          <markdown [data]="message.message" class="text-md/6 block"></markdown>
+          <small
+            class="text-xs block mt-5 italic text-right text-slate-400 border-t border-dotted border-slate-400 pt-1"
+            >{{ message.type }}</small
+          >
         </div>
       </div>
     </div>

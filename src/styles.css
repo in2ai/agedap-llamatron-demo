@@ -82,3 +82,35 @@ markdown {
   font-weight: 600;
   background-color: var(--color-slate-300);
 }
+
+/* SCROLL BAR RELATED */
+@media (pointer: none), (pointer: coarse) {
+  *::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* width */
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+/* Track */
+*::-webkit-scrollbar-track {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 10px;
+  background-color: var(--color-slate-300);
+}
+
+/* Handle */
+*::-webkit-scrollbar-thumb {
+  background: var(--color-slate-600);
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--color-slate-400);
+}
