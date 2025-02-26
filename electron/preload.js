@@ -5,13 +5,15 @@ contextBridge.exposeInMainWorld('electronAPI', {
     const { func } = data;
     return new Promise((resolve) => {
       ipcRenderer.send('runNodeCode', data);
-      ipcRenderer.once('onNodeCodeResponse', (_, response) => {
+      ipcRenderer.once(`onNodeCodeResponse_${func}`, (_, response) => {
         if (response.func !== func) return;
         resolve(response);
       });
     });
   },
-  onNodeCodeResponse: (callback) => ipcRenderer.on('onNodeCodeResponse', callback),
+  // onNodeCodeResponse: (callback) => {
+  //   return ipcRenderer.on('onNodeCodeResponse', callback);
+  // },
   onPartialMessageResponse: (callback) => ipcRenderer.on('onPartialMessageResponse', callback),
   onNewExternalMessage: (callback) => ipcRenderer.on('onNewExternalMessage', callback),
 });
