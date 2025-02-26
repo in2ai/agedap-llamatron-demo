@@ -1,8 +1,8 @@
-<div class="flex flex-col justify-between w-full h-full p-10">
+<div class="flex flex-col justify-between w-full h-full overflow-hidden">
   <ng-container *ngIf="!isChatLoaded">
     <div class="flex w-full h-full justify-center items-center">
       <ng-container *ngIf="!errorMessage"
-        ><div class="flex flex-row justify-start items-center">
+        ><div class="flex flex-row justify-center items-center">
           <h1 class="text-xl">Cargando chat...</h1>
         </div>
       </ng-container>
@@ -16,16 +16,15 @@
     </div>
   </ng-container>
 
-  <ng-container *ngIf="isChatLoaded">
-    <header *ngIf="chatId" class="flex flex-row justify-start items-center pb-4">
-      <app-button
-        class="mr-2"
-        icon="arrow-left"
-        (click)="onBackToWorkspaceHandler()"
-        type="secondary"
-        [label]="'COMMON.BACK' | translate"
-      />
-      <h1>CHAT "{{ chat.name }}"</h1>
+  <ng-container *ngIf="isChatLoaded" class="flex flex-col w-full h-full">
+    <header class="flex flex-none">
+      <div class="flex flex-row justify-start items-center pb-4">
+        <h1 class="text-lg font-semibold">
+          <i class="pi pi-comments pr-2"></i>
+          <span>Mis chats </span>
+        </h1>
+        <span>| {{ chat.name }}</span>
+      </div>
     </header>
     <div #chatRef class="flex flex-1 flex-col overflow-y-auto">
       <div

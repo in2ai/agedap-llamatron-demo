@@ -29,7 +29,7 @@
           </div>
         </div>
       </header>
-      <div class="flex flex-1 w-full h-full">
+      <div class="flex flex-1 w-full h-full overflow-hidden">
         <!-- New chat overlay -->
         <div *ngIf="isNewChatCreationVisible" class="absolute top-0 left-0 z-10 flex w-full h-full">
           <div class="absolute z-10 flex w-full h-full">
@@ -81,6 +81,15 @@
                 [defaultColDef]="defaultColDef"
                 (cellClicked)="onCellClicked($event)"
               />
+            </main>
+          </section>
+        </div>
+        <!-- Chat selected  -->
+        <div class="flex flex-1 w-full h-full" *ngIf="chatId">
+          <!-- Chats found -->
+          <section class="flex flex-col w-full h-full">
+            <main class="flex flex-col w-full h-full overflow-hidden">
+              <app-chat [chatId]="chatId" />
             </main>
           </section>
         </div>

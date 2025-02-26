@@ -1,5 +1,13 @@
 import { CommonModule, NgFor } from '@angular/common';
-import { ChangeDetectorRef, Component, ElementRef, inject, OnInit, ViewChild } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  inject,
+  Input,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -7,7 +15,6 @@ import { MarkdownModule } from 'ngx-markdown';
 import { ButtonModule } from 'primeng/button';
 import { Chat } from 'src/app/models';
 import { ChatService } from 'src/app/service/chat.service';
-import { ButtonComponent } from '../../components/ui/button/button.component';
 
 type Message = {
   type: 'user' | 'model' | 'system' | 'external';
@@ -17,14 +24,13 @@ type Message = {
 @Component({
   selector: 'app-chat',
   templateUrl: './chat.component.html',
-  styles: [':host { width: 100%; }'],
+  styles: [':host { width: 100%; height: 100%; }'],
   imports: [
     MarkdownModule,
     CommonModule,
     NgFor,
     ReactiveFormsModule,
     ButtonModule,
-    ButtonComponent,
     TranslateModule,
   ],
 })
@@ -32,7 +38,9 @@ export class ChatComponent implements OnInit {
   router = inject(Router);
   activatedRoute = inject(ActivatedRoute);
 
-  chatId = '';
+  @Input()
+  chatId: string = '';
+
   chat!: Chat;
 
   @ViewChild('chatRef') chatRef!: ElementRef;
@@ -51,9 +59,8 @@ export class ChatComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
-    this.chatId = this.activatedRoute.snapshot.params['chatId'] ?? '';
-
     // Recover chat data
+    console.log('chatId', this.chatId);
     try {
       this.chat = await this.chatService.getChat(this.chatId);
 
