@@ -73,7 +73,7 @@ export async function workOffersService(theChatController) {
 
   await sendMessage('Estamos buscando ofertas de trabajo que se ajusten a tu perfil...');
 
-  checkWorkOffers();
+  setTimeout(checkWorkOffers, 5000);
   const timer = setInterval(checkWorkOffers, checkInterval);
   return timer;
 }

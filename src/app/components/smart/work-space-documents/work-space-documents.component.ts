@@ -35,7 +35,7 @@ export class WorkSpaceDocumentsComponent implements OnInit {
     try {
       this.availableRelays = await this.relayService.getRelays();
       this.availableRelaysOptions = this.availableRelays.map((relay) => {
-        return { value: relay.url, label: relay.name };
+        return { value: relay.id, label: relay.name };
       });
     } catch (error) {
       console.log(error);
