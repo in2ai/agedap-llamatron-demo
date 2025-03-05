@@ -13,7 +13,6 @@ import {
   getWorkspaces,
   newChat,
   newWorkspace,
-  replaceChatMessages,
 } from './db.mjs';
 import { RELAY_LIST } from './relays.mjs';
 import { startChatService, stopChatService } from './service/index.mjs';

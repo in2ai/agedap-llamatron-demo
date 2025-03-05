@@ -10,7 +10,7 @@
     "ng": "ng",
     "start": "electron-forge start",
     "build-dev": "ng build --configuration=development",
-    "build-pro": "ng build --prod",
+    "build-pro": "ng build --configuration=production",
     "electron": "ng build && electron .",
     "electron-dev": "ng build && electron . --trace-warnings",
     "package": "electron-forge package",

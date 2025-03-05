@@ -10,9 +10,13 @@ let weights = {
 };
 
 // Create a feature-extraction pipeline
-const extractor = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2', {
-  dtype: 'fp32',
-});
+let extractor = undefined;
+
+async function loadExtractor() {
+  extractor = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2', {
+    dtype: 'fp32',
+  });
+}
 
 function cosineSimilarity(vec1, vec2) {
   const dotProduct = vec1.reduce((sum, val, idx) => sum + val * vec2[idx], 0);
@@ -100,6 +104,9 @@ export async function computeSimilarity(userCv, offer) {
   ];
 
   // Compute embeddings in a batch
+  if (!extractor) {
+    await loadExtractor();
+  }
   const output = await extractor(sentences, { pooling: 'mean', normalize: true });
   const embeddingDimensions = output.ort_tensor.dims[1];
   const numSentences = output.ort_tensor.dims[0]; // Number of sentences
