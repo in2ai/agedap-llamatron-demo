@@ -5,13 +5,26 @@ import { dispatchCustomEvent } from '@langchain/core/callbacks/dispatch';
 import { trimMessages } from '@langchain/core/messages';
 
 let model = null;
-const CONTEXT_SIZE = 1024;
-export let modelPath = null;
-export const loadModel = async (path) => {
-  modelPath = path;
-  model = await ChatLlamaCpp.initialize({
-    modelPath: modelPath,
-    contextSize: CONTEXT_SIZE,
+export let configuration = null;
+let trimmer = trimMessages({
+  maxTokens: configuration?.maxTokens || 1024,
+  strategy: 'last',
+  tokenCounter: (msgs) => msgs.length,
+  includeSystem: true,
+  allowPartial: false,
+  startOn: 'human',
+});
+
+export const loadModel = async (config) => {
+  configuration = config;
+  model = await ChatLlamaCpp.initialize(config);
+  trimmer = trimMessages({
+    maxTokens: configuration?.maxTokens || 1024,
+    strategy: 'last',
+    tokenCounter: (msgs) => msgs.length,
+    includeSystem: true,
+    allowPartial: false,
+    startOn: 'human',
   });
 };
 
@@ -27,15 +40,6 @@ export const changePromptTemplate = async (prompt) => {
   ]);
 };
 
-const trimmer = trimMessages({
-  maxTokens: CONTEXT_SIZE - 128,
-  strategy: 'last',
-  tokenCounter: (msgs) => msgs.length,
-  includeSystem: true,
-  allowPartial: false,
-  startOn: 'human',
-});
-
 const callModel = async (state) => {
   try {
     if (model === null) {
@@ -43,7 +47,9 @@ const callModel = async (state) => {
     }
 
     if (model._context.sequencesLeft === 0) {
-      model._context = await model._model.createContext({ contextSize: CONTEXT_SIZE });
+      model._context = await model._model.createContext({
+        contextSize: configuration.contextSize || 1024,
+      });
     }
 
     const trimmedMessage = await trimmer.invoke(state.messages);

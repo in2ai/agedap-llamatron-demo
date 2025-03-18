@@ -1,6 +1,6 @@
 import { ipcMain } from 'electron';
 import { dialog } from 'electron';
-import { app, changePromptTemplate, loadModel, modelPath } from './langchain.mjs';
+import { app, changePromptTemplate, loadModel, configuration } from './langchain.mjs';
 import { AIMessage, HumanMessage, SystemMessage } from '@langchain/core/messages';
 import {
   addChatMessage,
@@ -35,7 +35,8 @@ export function handleRunNodeCode() {
       }
       case 'state': {
         const state = {
-          modelPath: modelPath,
+          modelPath: configuration.modelPath,
+          configuration: configuration,
         };
         event.sender.send('onNodeCodeResponse_state', {
           func: 'state',
@@ -49,6 +50,11 @@ export function handleRunNodeCode() {
       // - select file (already exists)
       // - load model
       case 'selectModel': {
+        const { config } = data;
+        let configuration = undefined;
+        if (config) {
+          configuration = JSON.parse(config, (key, value) => (value === null ? undefined : value));
+        }
         const dialogResult = await dialog.showOpenDialog({
           properties: ['openFile'],
           filters: [{ name: 'Modelo', extensions: ['gguf'] }],
@@ -60,7 +66,9 @@ export function handleRunNodeCode() {
           let modelName = modelPath;
           modelName = modelName.split('\\').pop() || '';
           modelName = modelName.split('/').pop() || '';
-          await loadModel(modelPath);
+
+          configuration.modelPath = modelPath;
+          await loadModel(configuration);
           event.sender.send('onNodeCodeResponse_selectModel', {
             func: 'selectModel',
             modelName,
