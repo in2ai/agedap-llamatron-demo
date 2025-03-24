@@ -1,4 +1,4 @@
-import { addChatMessage } from '../../db.mjs';
+import { addChatMessage, updateWorkspace } from '../../db.mjs';
 import { getUserFromLinkedinZip } from '../../linkedin.mjs';
 import { getWorkOffers } from '../../relay.mjs';
 import { RELAY_LIST } from '../../relays.mjs';
@@ -9,7 +9,6 @@ const similarityThreshold = 0.43;
 
 let chatController = undefined;
 let userCv = null;
-let lastTimeStamp = 0;
 
 export async function workOffersService(theChatController) {
   userCv = null;
@@ -85,8 +84,8 @@ async function checkWorkOffers() {
 
   if (!relay || !relay.url) return;
 
-  const workOffers = await getWorkOffers(relay.url, lastTimeStamp, null);
-  lastTimeStamp = Date.now();
+  const workOffers = await getWorkOffers(relay.url, workspace.lastTimestamp, null);
+  chatController.workspace = await updateWorkspace(workspace.id);
 
   for (const workOffer of workOffers) {
     try {

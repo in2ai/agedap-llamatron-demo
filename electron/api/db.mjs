@@ -24,6 +24,7 @@ export async function newWorkspace(type, name, description, documents, relayId) 
     relayId,
     documents,
     chatIds: [],
+    lastTimestamp: 0,
     createdAt: date,
     updatedAt: date,
   };
@@ -73,6 +74,22 @@ export async function editWorkspace(workspaceId, name, description, documents, r
   workspace.documents = documents;
   workspace.relayId = relayId;
   workspace.updatedAt = new Date();
+
+  await workspacesDb.read();
+  await workspacesDb.update((data) => {
+    const workspaceIndex = data.findIndex((w) => w.id === workspaceId);
+    data[workspaceIndex] = workspace;
+  });
+  return workspace;
+}
+
+export async function updateWorkspace(workspaceId) {
+  const workspace = await getWorkspace(workspaceId);
+  if (!workspace) throw new Error('Workspace no encontrado');
+
+  const date = new Date();
+  workspace.lastTimestamp = date;
+  workspace.updatedAt = date;
 
   await workspacesDb.read();
   await workspacesDb.update((data) => {
