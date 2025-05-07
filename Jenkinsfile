@@ -1,9 +1,16 @@
 pipeline {
     agent any
-    tools {
-        nodejs "NodeJS" // Specify the NodeJS installation name in Jenkins
-    }
     stages {
+        stage('Build: Install dependencies') {
+            steps {
+                sh '''#!/bin/bash
+                    set -x  # Enables debug mode
+
+                    apt-get update
+                    apt-get install -y nodejs
+                '''
+            }
+        }
         stage('Build') {
             steps {
                 script {
