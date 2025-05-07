@@ -13,6 +13,7 @@ pipeline {
 
                     apt-get update
                     apt-get install -y nodejs
+                    npm install -g @angular/cli@latest
                 '''
             }
         }
