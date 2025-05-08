@@ -34,13 +34,18 @@ export class ConfigComponent implements OnInit {
       });
 
       this.electronTest = true;
-      if (response.modelPath) {
+      if (response && response.modelPath) {
         this.modelLoaded = true;
         this.modelName = response.modelPath;
         if (this.modelName) {
           this.modelName = this.modelName.split('\\').pop() || '';
           this.modelName = this.modelName.split('/').pop() || '';
         }
+      }
+
+      const config = await (window as any).electronAPI.runNodeCode({ func: 'getConfig' });
+      if (!config || !config.sk) {
+        await (window as any).electronAPI.runNodeCode({ func: 'genSecretKey' });
       }
     } catch (error) {
       console.log(error);

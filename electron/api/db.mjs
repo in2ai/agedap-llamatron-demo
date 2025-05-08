@@ -7,6 +7,44 @@ const dbPath = path.resolve('db');
 if (!fs.existsSync(dbPath)) {
   fs.mkdirSync(dbPath);
 }
+//Config DB
+const configDb = await JSONFilePreset(path.join(dbPath, 'config.json'), {});
+
+export async function getConfig() {
+  await configDb.read();
+  return configDb.data;
+}
+
+export async function setConfig(config) {
+  await configDb.read();
+  await configDb.update((data) => {
+    Object.keys(config).forEach((key) => {
+      data[key] = config[key];
+    });
+  });
+  return config;
+}
+
+export async function getConfigValue(key) {
+  await configDb.read();
+  return configDb.data[key];
+}
+
+export async function setConfigValue(key, value) {
+  await configDb.read();
+  await configDb.update((data) => {
+    data[key] = value;
+  });
+  return value;
+}
+
+export async function deleteConfigValue(key) {
+  await configDb.read();
+  await configDb.update((data) => {
+    delete data[key];
+  });
+  return key;
+}
 
 //Workspaces DB
 const workspacesDb = await JSONFilePreset(path.join(dbPath, 'workspaces.json'), []);

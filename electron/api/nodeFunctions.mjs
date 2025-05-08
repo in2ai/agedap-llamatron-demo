@@ -5,17 +5,23 @@ import { AIMessage, HumanMessage, SystemMessage } from '@langchain/core/messages
 import {
   addChatMessage,
   deleteChat,
+  deleteConfigValue,
   deleteWorkspace,
   getChat,
   getChatMessages,
   getChats,
+  getConfig,
+  getConfigValue,
   getWorkspace,
   getWorkspaces,
   newChat,
   newWorkspace,
+  setConfig,
+  setConfigValue,
 } from './db.mjs';
 import { RELAY_LIST } from './relays.mjs';
 import { startChatService, stopChatService } from './service/index.mjs';
+import { generateSecretKey, getPublicKey } from 'nostr-tools';
 const controllers = new Map();
 
 export function handleRunNodeCode() {
@@ -34,13 +40,74 @@ export function handleRunNodeCode() {
         break;
       }
       case 'state': {
-        const state = {
-          modelPath: configuration.modelPath,
-          configuration: configuration,
-        };
+        let state = { modelPath: null, configuration: null };
+        if (configuration) {
+          state = {
+            modelPath: configuration.modelPath,
+            configuration: configuration,
+          };
+        }
         event.sender.send('onNodeCodeResponse_state', {
           func: 'state',
           ...state,
+        });
+        break;
+      }
+
+      //Config
+      case 'getConfig': {
+        const config = await getConfig();
+        event.sender.send('onNodeCodeResponse_getConfig', {
+          func: 'getConfig',
+          config,
+        });
+        break;
+      }
+      case 'setConfig': {
+        const config = await setConfig(data);
+        event.sender.send('onNodeCodeResponse_setConfig', {
+          func: 'setConfig',
+          config: config,
+        });
+        break;
+      }
+      case 'getConfigValue': {
+        const { key } = data;
+        const value = await getConfigValue(key);
+        event.sender.send('onNodeCodeResponse_getConfigValue', {
+          func: 'getConfigValue',
+          value,
+        });
+        break;
+      }
+      case 'setConfigValue': {
+        const { key, value } = data;
+        const config = await setConfigValue(key, value);
+        event.sender.send('onNodeCodeResponse_setConfigValue', {
+          func: 'setConfigValue',
+          config: config,
+        });
+        break;
+      }
+      case 'deleteConfigValue': {
+        const { key } = data;
+        const deletedKey = await deleteConfigValue(key);
+        event.sender.send('onNodeCodeResponse_deleteConfigValue', {
+          func: 'deleteConfigValue',
+          key: deletedKey,
+        });
+        break;
+      }
+
+      case 'genSecretKey': {
+        const sk = generateSecretKey();
+        const pk = getPublicKey(sk);
+
+        setConfigValue('secretKey', sk);
+        event.sender.send('onNodeCodeResponse_genSecretKey', {
+          func: 'genSecretKey',
+          secretKey: sk,
+          publicKey: pk,
         });
         break;
       }
