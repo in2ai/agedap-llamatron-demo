@@ -19,6 +19,7 @@ export const getWorkOffers = async (relayUrl, lastTimeStamp /*, selectedIndustry
         ],
         {
           onevent(event) {
+            console.log('Event received:', event);
             const newWorkOffer = JSON.parse(event.content);
             newWorkOffer.createdAt = event.created_at;
             newWorkOffer.nostrId = event.id;
