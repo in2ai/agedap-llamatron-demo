@@ -44,6 +44,7 @@
               message.type === 'model' || message.type === 'system' || message.type === 'external',
           }"
         >
+          <markdown [data]="message.message" class="text-md/6 block"></markdown>
           <small
             class="flex flex-row justify-end items-center text-xs w-full mt-5 italic text-slate-300 border-t border-dotted border-slate-400 pt-1"
             [ngClass]="{

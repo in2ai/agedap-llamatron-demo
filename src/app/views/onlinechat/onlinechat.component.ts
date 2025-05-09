@@ -3,6 +3,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Buffer } from 'buffer';
+import { MarkdownModule } from 'ngx-markdown';
 import { EventTemplate } from 'nostr-tools/core';
 import { finalizeEvent } from 'nostr-tools/pure';
 import { Relay } from 'nostr-tools/relay';
@@ -16,7 +17,7 @@ window.Buffer = Buffer;
   selector: 'app-onlinechat',
   templateUrl: './onlinechat.component.html',
   styles: [':host { width: 100%; }'],
-  imports: [CommonModule, ButtonModule, ReactiveFormsModule],
+  imports: [CommonModule, ButtonModule, ReactiveFormsModule, MarkdownModule],
 })
 export class OnlineChatComponent implements OnInit {
   router = inject(Router);
@@ -58,21 +59,8 @@ export class OnlineChatComponent implements OnInit {
   }
 
   async subscribeToChat() {
-    /*
-
-    relay.sub([
-        {
-          kinds: [1],
-          authors: authors.filter((author) => author !== undefined),
-          '#t': [workOffer.nostrId],
-        },
-      ]);
-      console.log(
-        'Author:',
-        authors.filter((author) => author !== undefined)
-      );*/
     const relay = await Relay.connect(this.onlineChat.relay);
-    const sub = relay.subscribe(
+    /*const sub = */ relay.subscribe(
       [
         {
           kinds: [1],
@@ -81,8 +69,17 @@ export class OnlineChatComponent implements OnInit {
         },
       ],
       {
-        onevent(event) {
+        onevent: (event) => {
           console.log('Event:', event);
+          const { content, pubkey, created_at } = event;
+          let type = 'external';
+          if (pubkey === this.appConfig.publicKey) type = 'user';
+          const message = {
+            message: content,
+            type: type,
+            createdAt: created_at,
+          };
+          this.messages.push(message);
         },
         oneose() {
           console.log('Event:', 'oneose');
