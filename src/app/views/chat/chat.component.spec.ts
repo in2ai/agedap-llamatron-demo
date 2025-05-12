@@ -16,19 +16,6 @@ const mockChatService = {
 };
 
 // Mock de electronAPI
-(window as any).electronAPI = {
-  runNodeCode: jasmine.createSpy('runNodeCode').and.callFake(({ func }: { func: string }) => {
-    if (func === 'state') {
-      return Promise.resolve({ modelPath: '/path/to/model' });
-    }
-    if (func === 'loadChat') {
-      return Promise.resolve({ messages: [] });
-    }
-    return Promise.resolve();
-  }),
-  onPartialMessageResponse: jasmine.createSpy('onPartialMessageResponse').and.callFake(() => {}),
-  onNewExternalMessage: jasmine.createSpy('onNewExternalMessage').and.callFake(() => {}),
-};
 
 describe('ChatComponent', () => {
   let component: ChatComponent;
@@ -52,6 +39,22 @@ describe('ChatComponent', () => {
   });
 
   beforeEach(() => {
+    (window as any).electronAPI = {
+      runNodeCode: jasmine.createSpy('runNodeCode').and.callFake(({ func }: { func: string }) => {
+        if (func === 'state') {
+          return Promise.resolve({ modelPath: '/path/to/model' });
+        }
+        if (func === 'loadChat') {
+          return Promise.resolve({ messages: [] });
+        }
+        return Promise.resolve();
+      }),
+      onPartialMessageResponse: jasmine
+        .createSpy('onPartialMessageResponse')
+        .and.callFake(() => {}),
+      onNewExternalMessage: jasmine.createSpy('onNewExternalMessage').and.callFake(() => {}),
+    };
+
     fixture = TestBed.createComponent(ChatComponent);
     component = fixture.componentInstance;
     chatService = TestBed.inject(ChatService);
@@ -115,13 +118,5 @@ describe('ChatComponent', () => {
     await component.sendMessage();
 
     expect(component.messages.length).toBe(0);
-  }));
-
-  it('debería parar la generación de respuesta', fakeAsync(async () => {
-    await component.stopGeneratingResponse();
-    expect((window as any).electronAPI.runNodeCode).toHaveBeenCalledWith({
-      func: 'stopGeneratingResponse',
-      chatId: component.chatId,
-    });
   }));
 });

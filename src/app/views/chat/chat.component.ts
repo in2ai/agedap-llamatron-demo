@@ -69,8 +69,8 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewInit {
   async ngOnInit() {
     // Recover chat data
     let appConfig = await (window as any).electronAPI.runNodeCode({ func: 'getConfig' });
-    appConfig = appConfig.config;
-    this.myPkey = appConfig.publicKey;
+    if (appConfig && appConfig.config) appConfig = appConfig.config;
+    if (appConfig && appConfig.publicKey) this.myPkey = appConfig.publicKey;
 
     try {
       this.chat = await this.chatService.getChat(this.chatId);
