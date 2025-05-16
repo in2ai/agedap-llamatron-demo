@@ -280,7 +280,6 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewInit {
       func: 'newOnlineChat',
       relay: workOffer.relayUrl,
       authors: [this.myPkey, workOffer.authorPublicKey],
-      tags: [workOffer.nostrId],
     });
     console.log('//New online chat response: ', response);
     const onlineChatId = response.onlineChat.id;

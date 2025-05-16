@@ -80,8 +80,7 @@ export class OnlineChatComponent implements OnInit, OnDestroy {
       [
         {
           kinds: [1],
-          authors: this.onlineChat.authors.filter((author) => author !== undefined),
-          '#t': this.onlineChat.tags,
+          '#t': [this.onlineChat.id],
         },
       ],
       {
@@ -99,6 +98,7 @@ export class OnlineChatComponent implements OnInit, OnDestroy {
         },
         oneose: () => {
           console.log('Event:', 'oneose');
+          this.insertRecordIfNotExists();
           //sub.close();
         },
       }
@@ -106,10 +106,9 @@ export class OnlineChatComponent implements OnInit, OnDestroy {
   }
 
   async sendMessage() {
-    const tags = this.onlineChat.tags.map((tag) => ['t', tag]);
     const eventTemplate: EventTemplate = {
       kind: 1,
-      tags: tags,
+      tags: [['t', this.onlineChat.id]],
       content: this.form.value.message,
       created_at: Math.floor(Date.now() / 1000),
     };
@@ -120,5 +119,22 @@ export class OnlineChatComponent implements OnInit, OnDestroy {
     await this.relay.publish(signedEvent);
     //relay.close();
     this.form.reset();
+  }
+
+  async insertRecordIfNotExists() {
+    const anyExternalMessage = this.messages.find((message) => message.type === 'external');
+    if (!anyExternalMessage) {
+      const eventTemplate: EventTemplate = {
+        kind: 3,
+        tags: [['p', this.onlineChat.authors[1], this.onlineChat.id]],
+        content: '',
+        created_at: Math.floor(Date.now() / 1000),
+      };
+      console.log('Event:', eventTemplate);
+      const sk = new Uint8Array(Buffer.from(this.appConfig.secretKey, 'base64'));
+      const signedEvent = finalizeEvent(eventTemplate, sk);
+      await this.relay.publish(signedEvent);
+      console.log('Event published:', signedEvent);
+    }
   }
 }

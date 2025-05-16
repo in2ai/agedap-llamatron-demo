@@ -77,9 +77,9 @@ export function handleRunNodeCode() {
         break;
       }
       case 'newOnlineChat': {
-        const { relay, authors, tags } = data;
-        let onlineChat = await onlineChatExists(relay, authors, tags);
-        if (!onlineChat) onlineChat = await newOnlineChat(relay, authors, tags);
+        const { relay, authors } = data;
+        let onlineChat = await onlineChatExists(relay, authors);
+        if (!onlineChat) onlineChat = await newOnlineChat(relay, authors);
         event.sender.send('onNodeCodeResponse_newOnlineChat', {
           func: 'newOnlineChat',
           onlineChat,

@@ -41,17 +41,6 @@ export class OnlineChatListComponent implements OnInit {
       },
     },
     {
-      field: 'tags',
-      headerName: 'Tags',
-      valueGetter: (params) => {
-        if (params && params.data && params.data.tags && params.data.tags.length > 0) {
-          const tags = params.data.tags;
-          return tags.join(', ');
-        }
-        return '';
-      },
-    },
-    {
       field: 'createdAt',
       headerName: 'Creado el',
       valueFormatter: (params) => isoStringToddMMYYYYhhmmss(params.value),

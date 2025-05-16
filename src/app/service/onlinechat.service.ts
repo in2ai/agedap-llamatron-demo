@@ -17,7 +17,6 @@ export class OnlineChatService {
           return {
             id: ws.id,
             authors: ws.authors,
-            tags: ws.tags,
             relay: ws.relay,
             createdAt: ws.createdAt,
             updatedAt: ws.updatedAt,
@@ -39,7 +38,6 @@ export class OnlineChatService {
       const onlineChat: OnlineChat = {
         id: response.onlineChat.id,
         authors: response.onlineChat.authors,
-        tags: response.onlineChat.tags,
         relay: response.onlineChat.relay,
         createdAt: response.onlineChat.createdAt,
         updatedAt: response.onlineChat.updatedAt,

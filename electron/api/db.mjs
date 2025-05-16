@@ -23,26 +23,23 @@ export async function getOnlineChat(id) {
   return chat;
 }
 
-export async function onlineChatExists(relay, authors, tags) {
+export async function onlineChatExists(relay, authors) {
   await onlineChatsDb.read();
   const chat = onlineChatsDb.data.find(
     (c) =>
       c.relay === relay &&
       c.authors.length === authors.length &&
-      c.tags.length === tags.length &&
-      c.authors.every((a) => authors.includes(a)) &&
-      c.tags.every((t) => tags.includes(t))
+      c.authors.every((a) => authors.includes(a))
   );
   return chat;
 }
 
-export async function newOnlineChat(relay, authors, tags) {
+export async function newOnlineChat(relay, authors) {
   const id = uuidv4();
   const date = new Date();
   const onlineChat = {
     id,
     authors,
-    tags,
     relay,
     createdAt: date,
     updatedAt: date,
