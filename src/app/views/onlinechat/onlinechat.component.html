@@ -55,7 +55,10 @@
                 message.type === 'external',
             }"
           >
-            <span class="font-bold">{{ message.type === 'user' ? 'user' : 'model' }}</span>
+            <span *ngIf="message.type === 'user'" class="font-bold">me</span>
+            <span *ngIf="message.type != 'user'" class="font-bold"
+              >{{ message.pubkey | slice: 0 : 10 }}...</span
+            >
             <span *ngIf="message.createdAt"
               ><span class="px-2">|</span> {{ message.createdAt | date: 'dd/MM/yyyy hh:mm' }}</span
             ></small
