@@ -107,11 +107,12 @@ pipeline {
                   '''
 
                   // Crear release y subir el artefacto (usando GitHub CLI)
-                  sh '''
-                      gh auth login --with-token <<< "${ghToken}"
-
-                      gh release create ${tagName} out/app.zip --title "${releaseName}" --notes "Automated release from Jenkins"
-                  '''
+                  withEnv(["GH_TOKEN=${ghToken}"]) {
+                      sh '''
+                          gh auth setup-git
+                          gh release create ${tagName} out/app.zip --title "${releaseName}" --notes "Automated release from Jenkins"
+                      '''
+                  }
               }
           }
       }
