@@ -62,6 +62,9 @@ pipeline {
             }
         }
         stage('Package & Release') {
+          options {
+            timeout(time: 10, unit: 'MINUTES')
+          }
           when {
               expression { !env.CHANGE_ID } // no en PRs
           }
