@@ -78,16 +78,17 @@ pipeline {
 
               // Ejecutar el empaquetado
               // Windows
+              def appNameWin = "agedap-llamatron-win32-x64-build-${env.BUILD_NUMBER}.zip"
               sh 'npm run package-win'
 
               // Instalar zip si no lo tienes
               sh 'apt-get install -y zip'
 
               // Crear el archivo zip
-              sh '''
+              sh """
                   cd out/
-                  zip -r app.zip *
-              '''
+                  zip -r -9 ${appNameWin} agedap-llamatron-win32-x64
+              """
 
               // Subir a GitHub Releases usando la GitHub CLI o cURL
               script {
@@ -117,7 +118,7 @@ pipeline {
                   withEnv(["GH_TOKEN=${ghToken}"]) {
                     sh """
                         gh auth setup-git
-                        gh release create ${tagName} --title "${releaseName}" --notes "Automated release from Jenkins" out/app.zip
+                        gh release create ${tagName} --title "${releaseName}" --notes "Automated release from Jenkins" out/${appNameWin}
                     """
                 }
               }
