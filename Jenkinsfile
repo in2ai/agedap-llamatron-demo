@@ -98,7 +98,7 @@ pipeline {
                 // Crear el archivo zip
                 sh """
                     cd out/
-                    7z a -t7z -mx=9 ${APP_NAME_WIN} agedap-llamatron-win32-x64
+                    7z a -tzip -mx=9 ${APP_NAME_WIN} agedap-llamatron-win32-x64
                 """
               }
 
