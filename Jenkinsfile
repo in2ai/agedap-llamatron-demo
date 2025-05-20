@@ -77,18 +77,28 @@ pipeline {
               sh 'rm -rf out/'
 
               // Ejecutar el empaquetado
-              // Windows
-              def appNameWin = "agedap-llamatron-win32-x64-build-${env.BUILD_NUMBER}.zip"
-              sh 'npm run package-win'
+              script { // Windows
+                def appNameWin = "agedap-llamatron-win32-x64-build-${env.BUILD_NUMBER}.zip"
+                sh 'npm run package-win'
 
-              // Instalar zip si no lo tienes
-              sh 'apt-get install -y zip'
+                // Instalar zip si no lo tienes
+                sh 'apt-get install -y zip'
 
-              // Crear el archivo zip
-              sh """
-                  cd out/
-                  zip -r -9 ${appNameWin} agedap-llamatron-win32-x64
-              """
+                // Copy required files to the output directory
+                sh """
+                    cp -r db/ out/agedap-llamatron-win32-x64/
+                    cp -r public/ out/agedap-llamatron-win32-x64/
+                    cp win/sharp-win32-x64.node out/agedap-llamatron-win32-x64/
+                    cp win/libvips-cpp.dll out/agedap-llamatron-win32-x64/
+                    cp win/libvips-42.dll out/agedap-llamatron-win32-x64/
+                """
+
+                // Crear el archivo zip
+                sh """
+                    cd out/
+                    zip -r -9 ${appNameWin} agedap-llamatron-win32-x64
+                """
+              }
 
               // Subir a GitHub Releases usando la GitHub CLI o cURL
               script {
