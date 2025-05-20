@@ -86,11 +86,12 @@ pipeline {
 
                 // Copy required files to the output directory
                 sh """
-                    cp -r db/ out/agedap-llamatron-win32-x64/
                     cp -r public/ out/agedap-llamatron-win32-x64/
                     cp win/sharp-win32-x64.node out/agedap-llamatron-win32-x64/
                     cp win/libvips-cpp.dll out/agedap-llamatron-win32-x64/
                     cp win/libvips-42.dll out/agedap-llamatron-win32-x64/
+                    cd out/agedap-llamatron-win32-x64/
+                    mkdir db
                 """
 
                 // Crear el archivo zip
