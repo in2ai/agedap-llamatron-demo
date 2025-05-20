@@ -44,8 +44,8 @@ pipeline {
                         echo "Building"
                     }
                 }
-                //sh 'npm install --force'
-                //sh 'npm run build-pro'
+                sh 'npm install --force'
+                sh 'npm run build-pro'
             }
         }
         stage('Test') {
@@ -58,7 +58,7 @@ pipeline {
                         echo "Running tests"
                     }
                 }
-                //sh 'ng test --code-coverage --watch=false --browsers=ChromeHeadless'
+                sh 'ng test --code-coverage --watch=false --browsers=ChromeHeadless'
             }
         }
         stage('Package & Release') {
@@ -74,11 +74,11 @@ pipeline {
               }
 
               // Rm old out/ if exists
-              //sh 'rm -rf out/'
+              sh 'rm -rf out/'
 
               // Ejecutar el empaquetado
               // Windows
-              //sh 'npm run package-win'
+              sh 'npm run package-win'
 
               // Instalar zip si no lo tienes
               sh 'apt-get install -y zip'
@@ -86,8 +86,8 @@ pipeline {
               // Crear el archivo zip
               sh '''
                   cd out/
+                  zip -r app.zip *
               '''
-                 // zip -r app.zip *
 
               // Subir a GitHub Releases usando la GitHub CLI o cURL
               script {
@@ -95,6 +95,13 @@ pipeline {
                   def tagName = "build-${env.BUILD_NUMBER}"
                   def releaseName = "Release ${env.BUILD_NUMBER}"
                   echo "Creating release ${releaseName} with tag ${tagName}"
+
+                  //Print current directory
+                  sh 'pwd'
+                  // Print the contents of the current directory
+                  sh 'ls -la'
+                  // Print the contents of the out directory
+                  sh 'ls -la out/'
 
                   // Instalar gh cli (url: https://github.com/cli/cli/releases/download/v2.73.0/gh_2.73.0_linux_amd64.deb)
                  // Instalar GitHub CLI
@@ -110,7 +117,7 @@ pipeline {
                   withEnv(["GH_TOKEN=${ghToken}"]) {
                       sh '''
                           gh auth setup-git
-                          gh release create ${tagName} 'out/app.zip#${releaseName}' --title "${releaseName}" --notes "Automated release from Jenkins"
+                          gh release create ${tagName} 'out/app.zip#"${releaseName}"' --title "${releaseName}" --notes "Automated release from Jenkins"
                       '''
                   }
               }
