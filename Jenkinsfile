@@ -117,7 +117,7 @@ pipeline {
                   withEnv(["GH_TOKEN=${ghToken}"]) {
                       sh '''
                           gh auth setup-git
-                          gh release create ${tagName} 'out/app.zip#"${releaseName}"' --title "${releaseName}" --notes "Automated release from Jenkins"
+                          gh release create ${tagName} --title "${releaseName}" --notes "Automated release from Jenkins" out/app.zip#"${releaseName}"
                       '''
                   }
               }
