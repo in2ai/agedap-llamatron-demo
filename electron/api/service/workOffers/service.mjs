@@ -89,11 +89,11 @@ export async function workOffersService(theChatController) {
     await sendMessage('Estamos buscando ofertas de trabajo que se ajusten a tu perfil...');
 
   setTimeout(checkWorkOffers, 5000);
-  const timer = setInterval(checkWorkOffers, checkInterval);
+  const timer = setInterval(checkWorkOffers, checkInterval, printLookingForWork);
   return timer;
 }
 
-async function checkWorkOffers() {
+async function checkWorkOffers(printLookingForWork) {
   console.log('Checking work offers...');
   const { workspace, event } = chatController;
   const relay = RELAY_LIST.find((r) => r.id === workspace.relayId);
@@ -101,6 +101,7 @@ async function checkWorkOffers() {
   if (!relay || !relay.url) return;
 
   const workOffers = await getWorkOffers(relay.url, workspace.lastTimestamp, null);
+  let matchedOffersCount = 0;
   chatController.workspace = await updateWorkspace(workspace.id);
 
   for (const workOffer of workOffers) {
@@ -127,11 +128,15 @@ async function checkWorkOffers() {
           }:object}}**<br/>
         `;
         await sendMessage(message);
+        matchedOffersCount++;
       }
     } catch (error) {
       console.error('Error al calcular similitud', error, workOffer);
     }
   }
+
+  if (matchedOffersCount <= 0 && printLookingForWork)
+    await sendMessage('No hemos encontrado ofertas de trabajo que se ajusten a tu perfil.');
 }
 
 async function sendMessage(message) {
