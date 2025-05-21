@@ -82,6 +82,7 @@ pipeline {
 
               // Ejecutar el empaquetado
               script { // Windows
+                sh 'npm install --os=win32 --cpu=x64 sharp'
                 sh 'npm run package-win'
 
                 // Instalar zip si no lo tienes
@@ -90,9 +91,6 @@ pipeline {
                 // Copy required files to the output directory
                 sh """
                     cp -r public/ out/agedap-llamatron-win32-x64/
-                    cp win/sharp-win32-x64.node out/agedap-llamatron-win32-x64/
-                    cp win/libvips-cpp.dll out/agedap-llamatron-win32-x64/
-                    cp win/libvips-42.dll out/agedap-llamatron-win32-x64/
                 """
 
                 // Crear el archivo zip

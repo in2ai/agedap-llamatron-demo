@@ -5,6 +5,7 @@ module.exports = {
   packagerConfig: {
     asar: {
       unpack: [
+        '**/node_modules/@img/**',
         '**/node_modules/@node-llama-cpp/**',
         '**/node_modules/@huggingface/**',
         '**/node_modules/onnxruntime-common/**',
