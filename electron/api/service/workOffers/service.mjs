@@ -88,8 +88,8 @@ export async function workOffersService(theChatController) {
   if (printLookingForWork)
     await sendMessage('Estamos buscando ofertas de trabajo que se ajusten a tu perfil...');
 
-  setTimeout(checkWorkOffers, 5000);
-  const timer = setInterval(checkWorkOffers, checkInterval, printLookingForWork);
+  setTimeout(checkWorkOffers, 5000, printLookingForWork);
+  const timer = setInterval(checkWorkOffers, checkInterval);
   return timer;
 }
 
@@ -135,6 +135,7 @@ async function checkWorkOffers(printLookingForWork) {
     }
   }
 
+  console.log('matchedOffersCount: ', matchedOffersCount, printLookingForWork);
   if (matchedOffersCount <= 0 && printLookingForWork)
     await sendMessage('No hemos encontrado ofertas de trabajo que se ajusten a tu perfil.');
 }
