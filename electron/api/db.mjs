@@ -162,6 +162,23 @@ export async function updateChatLastTimestamp(
   return chat;
 }
 
+export async function updateChatPluginLastTimestamp(chatId) {
+  const chat = await getChat(chatId);
+  if (!chat) throw new Error('Chat no encontrado');
+
+  const timestamp = new Date().getTime();
+  chat.pluginLastTimestamp = timestamp;
+  chat.updatedAt = new Date();
+  await chatsDb.read();
+  await chatsDb.update((data) => {
+    const chatIndex = data.findIndex((c) => c.id === chatId);
+    if (chatIndex === -1) throw new Error('Chat no encontrado');
+    data[chatIndex].pluginLastTimestamp = timestamp;
+    data[chatIndex].updatedAt = chat.updatedAt;
+  });
+  return chat;
+}
+
 export async function getChats() {
   await chatsDb.read();
   const chats = chatsDb.data;

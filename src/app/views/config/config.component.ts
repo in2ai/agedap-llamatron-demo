@@ -47,7 +47,7 @@ export class ConfigComponent implements OnInit {
   public appConfig: any = null;
   public gpuTier: number = 0;
   public togetherApiKey: string = '';
-  public minTier: number = 3;
+  public minTier: number = 4;
   public loading: boolean = true;
   public form!: FormGroup;
 

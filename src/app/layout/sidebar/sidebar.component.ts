@@ -41,6 +41,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
         this.modelLoaded = data.modelLoaded;
       } else if (data.newChat) {
         this.chats.unshift(data.newChat); // Add new chat to the beginning of the list
+        this.currentChatId = data.newChat.id; // Set current chat ID to the new chat
       }
     });
 

@@ -28,7 +28,11 @@ let notification = null;
 const subscribeToOnlineChat = (chat) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const isCurrentChat = chatController.chat && chatController.chat.id === chat.id;
+      let isCurrentChat = chatController.chat && chatController.chat.id === chat.id;
+      if (typeof isCurrentChat !== 'boolean') {
+        isCurrentChat = false; // Aseguramos que sea un booleano
+      }
+      console.log('Subscribing to online chat:', chat.id, isCurrentChat);
 
       if (isCurrentChat) {
         if (chatController.sub) chatController.sub.close();
@@ -163,6 +167,8 @@ export async function onNewUserMessage(event, message) {
     newOnlineMessage(message);
     return false;
   }
+
+  return true;
 }
 
 async function sendMessage(message) {
@@ -222,10 +228,11 @@ export async function startBackgroundChatUpdate(event, theMainWindow, onUpdated 
 }
 
 async function backgroundChatUpdate(onUpdated) {
-  console.log('Background chat update...');
   const currentChatId = chatController.chat ? chatController.chat.id : null;
+  console.log('Background chat update...', currentChatId);
   const chats = await getChats();
   for (const chat of chats) {
+    console.log('Chat:', chat.id, chat.type);
     if (chat.id === currentChatId) break;
     if (chat.type === 'online') {
       console.log('Updating online chat:', chat.id);
@@ -243,11 +250,12 @@ async function backgroundChatUpdate(onUpdated) {
 }
 
 async function sendDesktopNotification(chat, totalMessages, lastMessage) {
+  console.log('Sending desktop notification for chat:', totalMessages, lastMessage);
   let NOTIFICATION_TITLE = 'Nuevo mensaje recibido en ' + chat.name;
   let NOTIFICATION_BODY = '';
   if (totalMessages > 1) {
     NOTIFICATION_BODY = `Tienes ${totalMessages} mensajes nuevos.`;
-  } else if (totalMessages === 1) {
+  } else if (totalMessages) {
     NOTIFICATION_BODY = `${lastMessage.message}`;
   }
 

@@ -105,7 +105,7 @@ export class ChatV2Component implements OnInit, OnDestroy, AfterViewInit {
             type: 'text',
             name: message,
           });
-          this.router.navigate(['/chat', response.chat.id]);
+          //this.router.navigate(['/chat', response.chat.id]);
           this.appService.sendData({
             newChat: response.chat,
           });
@@ -180,7 +180,7 @@ export class ChatV2Component implements OnInit, OnDestroy, AfterViewInit {
       });
       if (!this.modelLoaded) this.form.get('message')?.disable();
       this.isChatLoaded = true;
-      this.loadChat();
+      await this.loadChat();
     } catch (error) {
       console.log(`//Error recovering chat info: ${error}`);
       this.errorMessage =

@@ -1,4 +1,8 @@
-import { addChatMessage, updateChatLastTimestamp } from '../../db.mjs';
+import {
+  addChatMessage,
+  updateChatLastTimestamp,
+  updateChatPluginLastTimestamp,
+} from '../../db.mjs';
 import { getUserFromLinkedinZip } from '../../linkedin.mjs';
 import { getWorkOffers } from '../../relay.mjs';
 import { RELAY_LIST } from '../../relays.mjs';
@@ -103,9 +107,9 @@ async function checkWorkOffers(printLookingForWork) {
 
   if (!relay || !relay.url) return;
 
-  const workOffers = await getWorkOffers(relay.url, chat.lastTimestamp || 0, null);
+  const workOffers = await getWorkOffers(relay.url, chat.pluginLastTimestamp || 0, null);
   let matchedOffersCount = 0;
-  chatController.chat = await updateChatLastTimestamp(chat.id);
+  chatController.chat = await updateChatPluginLastTimestamp(chat.id);
 
   for (const workOffer of workOffers) {
     try {

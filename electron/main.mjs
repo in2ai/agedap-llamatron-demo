@@ -25,7 +25,7 @@ function createWindow() {
 
   mainWindow.loadFile(path.join(__dirname, '../dist/agedap-llamatron/browser/index.html'));
 
-  //mainWindow.webContents.openDevTools();
+  mainWindow.webContents.openDevTools();
 
   tray = new Tray('public/icon.png');
   const contextMenu = Menu.buildFromTemplate([
