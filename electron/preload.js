@@ -16,4 +16,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // },
   onPartialMessageResponse: (callback) => ipcRenderer.on('onPartialMessageResponse', callback),
   onNewExternalMessage: (callback) => ipcRenderer.on('onNewExternalMessage', callback),
+  onBackgroundChatUpdated: (callback) => ipcRenderer.on('onBackgroundChatUpdated', callback),
+  onNotificationClicked: (callback) => ipcRenderer.on('onNotificationClicked', callback),
 });

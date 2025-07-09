@@ -124,6 +124,7 @@ async function checkWorkOffers(printLookingForWork) {
         **Similitud:** ${similarity.toFixed(2) * 100}%<br/>
         <br/><br/>
         **{{object:{
+            \"title\": \"${workOffer.title}\",
             \"type\": \"workOffer\",
             \"relayUrl\": \"${relay.url}\",
             \"nostrId\": \"${workOffer.nostrId}\",

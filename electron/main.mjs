@@ -51,6 +51,9 @@ function createWindow() {
   });
 }
 
+if (process.platform === 'win32') {
+  app.setAppUserModelId(app.name);
+}
 app.whenReady().then(createWindow);
 app.on('window-all-closed', (event) => {
   event.preventDefault(); // Evita que la app se cierre completamente

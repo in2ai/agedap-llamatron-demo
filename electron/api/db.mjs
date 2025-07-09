@@ -133,7 +133,11 @@ export async function newChat(
   return chat;
 }
 
-export async function updateChatLastTimestamp(chatId) {
+export async function updateChatLastTimestamp(
+  chatId,
+  newUnreadMessages = null,
+  unreadMessages = null
+) {
   const chat = await getChat(chatId);
   if (!chat) throw new Error('Chat no encontrado');
 
@@ -145,6 +149,14 @@ export async function updateChatLastTimestamp(chatId) {
     const chatIndex = data.findIndex((c) => c.id === chatId);
     if (chatIndex === -1) throw new Error('Chat no encontrado');
     data[chatIndex].lastTimestamp = timestamp;
+    if (typeof newUnreadMessages === 'number') {
+      let totalUnreadMessages = data[chatIndex].unreadMessages || 0;
+      data[chatIndex].unreadMessages = totalUnreadMessages + newUnreadMessages;
+    }
+    if (typeof unreadMessages === 'number') {
+      data[chatIndex].unreadMessages = unreadMessages;
+    }
+
     data[chatIndex].updatedAt = chat.updatedAt;
   });
   return chat;
@@ -194,6 +206,18 @@ export async function addChatMessage(chatId, message, type) {
     data[chatIndex].messages.push(newMessage);
   });
   return newMessage;
+}
+
+export async function deleteChatMessages(chatId) {
+  const chat = await getChat(chatId);
+  if (!chat) throw new Error('Chat no encontrado');
+
+  await chatsDb.read();
+  await chatsDb.update((data) => {
+    const chatIndex = data.findIndex((c) => c.id === chatId);
+    data[chatIndex].messages = [];
+  });
+  return chatId;
 }
 
 export async function deleteChatMessage(chatId, messageId) {

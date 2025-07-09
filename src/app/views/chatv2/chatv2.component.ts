@@ -14,7 +14,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MarkdownModule } from 'ngx-markdown';
 import { ButtonModule } from 'primeng/button';
-import { Chat } from 'src/app/models';
 import { ChatService } from 'src/app/service/chat.service';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { AppService } from 'src/app/service/app.service';
@@ -52,7 +51,7 @@ export class ChatV2Component implements OnInit, OnDestroy, AfterViewInit {
 
   public chatId: string = '';
 
-  chat!: Chat;
+  chat!: any;
 
   @ViewChild('chatRef') chatRef!: ElementRef;
   public headerHeight: number = document.getElementById('header')?.offsetHeight || 0;
@@ -87,7 +86,13 @@ export class ChatV2Component implements OnInit, OnDestroy, AfterViewInit {
           func: 'unloadChat',
           chatId: this.chatId,
         });
+        console.log('Unloaded chat with id: ', this.chatId);
       }
+      this.isChatLoaded = false;
+      this.generatingResponse = false;
+      this.errorMessage = undefined;
+      this.messages = [];
+      this.workOffers = [];
       this.chatId = params['id'];
 
       if (this.chatId === 'new') {
@@ -100,6 +105,7 @@ export class ChatV2Component implements OnInit, OnDestroy, AfterViewInit {
             type: 'text',
             name: message,
           });
+          this.router.navigate(['/chat', response.chat.id]);
           this.appService.sendData({
             newChat: response.chat,
           });
@@ -144,6 +150,7 @@ export class ChatV2Component implements OnInit, OnDestroy, AfterViewInit {
                       },
                     ],
                   });
+                  this.router.navigate(['/chat', newChatResponse.chat.id]);
                   this.appService.sendData({
                     newChat: newChatResponse.chat,
                   });
@@ -156,6 +163,8 @@ export class ChatV2Component implements OnInit, OnDestroy, AfterViewInit {
         }
       } else this.initChat();
     });
+
+    this.activateChat();
   }
 
   async initChat() {
@@ -222,7 +231,6 @@ export class ChatV2Component implements OnInit, OnDestroy, AfterViewInit {
         this.changeDetector.detectChanges();
       }
       this.scrollToBottom(false);
-      this.activateChat();
     } catch (error) {
       console.log(`//Error loading chat: ${error}`);
     }
@@ -269,15 +277,18 @@ export class ChatV2Component implements OnInit, OnDestroy, AfterViewInit {
 
     (window as any).electronAPI.onNewExternalMessage((event: any, data: any) => {
       if (data.func === 'onNewExternalMessage' && data.chatId === this.chatId) {
-        const { content } = data;
+        const { content, type } = data;
+        console.log('New external message received: ', content);
         this.messages.push({
-          type: 'external',
+          type: type || 'external',
           message: content,
           createdAt: new Date().toISOString(),
         });
         this.processMessage(content, this.messages.length - 1);
         this.changeDetector.detectChanges();
         this.scrollToBottom();
+        this.generatingResponse = false;
+        this.form.get('message')?.enable();
       }
     });
   }
@@ -291,8 +302,11 @@ export class ChatV2Component implements OnInit, OnDestroy, AfterViewInit {
     if (!message) return;
 
     this.form.get('message')?.disable();
-    this.messages.push({ type: 'user', message, createdAt: date.toISOString() });
-    this.scrollToBottom();
+
+    if (this.chat.type != 'online') {
+      this.messages.push({ type: 'user', message, createdAt: date.toISOString() });
+      this.scrollToBottom();
+    }
 
     try {
       this.generatingResponse = true;
@@ -370,20 +384,19 @@ export class ChatV2Component implements OnInit, OnDestroy, AfterViewInit {
 
   async onWorkOfferClick(index: number) {
     const workOffer = this.workOffers[index];
-    console.log('//Work offer clicked: ', workOffer);
-
+    console.log('Work offer clicked: ', workOffer);
     const response = await (window as any).electronAPI.runNodeCode({
-      func: 'newOnlineChat',
-      relay: workOffer.relayUrl,
+      func: 'newChat',
+      type: 'online',
+      name: 'Conversación sobre ' + workOffer.title,
+      description: 'Conversación con el autor de la oferta ' + workOffer.title,
       authors: [this.myPkey, workOffer.authorPublicKey],
+      relay: workOffer.relayUrl,
     });
-    console.log('//New online chat response: ', response);
-    const onlineChatId = response.onlineChat.id;
-    await (window as any).electronAPI.runNodeCode({
-      func: 'unloadChat',
-      chatId: this.chatId,
+    console.log('New chat response: ', response);
+    this.router.navigate(['/chat', response.chat.id]);
+    this.appService.sendData({
+      newChat: response.chat,
     });
-
-    this.router.navigate([`/onlinechat/${onlineChatId}`]);
   }
 }

@@ -43,7 +43,7 @@ export class ChatService {
     }
   }
 
-  async getChat(chatId: string): Promise<Chat> {
+  async getChat(chatId: string): Promise<any> {
     try {
       const response = await (window as any).electronAPI
         .runNodeCode({
@@ -54,16 +54,8 @@ export class ChatService {
           console.log('//ERROR GETTING CHAT: ', error);
         });
       const { chat } = response;
-      const recoveredChat: Chat = {
-        id: chat.id,
-        workspaceId: chat.workspaceId ?? '-',
-        name: chat.name ?? '-',
-        description: chat.description ?? '-',
-        messages: chat.messages ?? [],
-        createdAt: chat.createdAt,
-        updatedAt: chat.updatedAt,
-      };
-      return recoveredChat;
+
+      return chat;
     } catch (error) {
       throw new Error(`Error getting chat : ${error}`);
     }

@@ -19,9 +19,15 @@ import {
   onlineChatExists,
   setConfig,
   setConfigValue,
+  updateChatLastTimestamp,
 } from './db.mjs';
 import { RELAY_LIST } from './relays.mjs';
-import { startChatService, stopChatService } from './service/index.mjs';
+import {
+  onNewUserMessage,
+  startBackgroundChatUpdate,
+  startChatService,
+  stopChatService,
+} from './service/index.mjs';
 import { generateSecretKey, getPublicKey } from 'nostr-tools';
 const controllers = new Map();
 
@@ -48,6 +54,12 @@ export function handleRunNodeCode() {
             await loadModel(dbConfig);
             console.log('Configuration loaded from DB:', dbConfig);
           }
+          startBackgroundChatUpdate(event, () => {
+            console.log('Background chat updated!!!!!!!');
+            event.sender.send('onBackgroundChatUpdated', {
+              func: 'onBackgroundChatUpdated',
+            });
+          });
         }
 
         let state = { modelPath: null, configuration: null };
@@ -275,8 +287,8 @@ export function handleRunNodeCode() {
 
       //Chats
       case 'newChat': {
-        const { name, description, type, plugin, documents } = data;
-        const chat = await newChat(name, description, type, plugin, documents);
+        const { name, description, type, plugin, documents, authors, relay } = data;
+        const chat = await newChat(name, description, type, plugin, documents, authors, relay);
         event.sender.send('onNodeCodeResponse_newChat', {
           func: 'newChat',
           chat,
@@ -314,6 +326,10 @@ export function handleRunNodeCode() {
       case 'loadChat': {
         const { chatId } = data;
         const chat = await getChat(chatId);
+        await updateChatLastTimestamp(chatId, null, 0);
+        event.sender.send('onBackgroundChatUpdated', {
+          func: 'onBackgroundChatUpdated',
+        });
         if (chat && chat.type && chat.type === 'plugin' && chat.plugin) {
           switch (chat.plugin) {
             case 'workOffers': {
@@ -327,7 +343,7 @@ export function handleRunNodeCode() {
               break;
             }
           }
-        } else {
+        } else if (chat.type && chat.type === 'text') {
           changePromptTemplate('Eres un asistente amable. Responde siempre de manera concisa.');
         }
 
@@ -336,7 +352,7 @@ export function handleRunNodeCode() {
         event.sender.send('onNodeCodeResponse_loadChat', {
           func: 'loadChat',
           chatId,
-          messages: loadedMessages,
+          messages: chat.type === 'online' ? [] : loadedMessages,
         });
 
         startChatService(event, chat);
@@ -346,6 +362,7 @@ export function handleRunNodeCode() {
       case 'unloadChat': {
         const { chatId } = data;
         stopChatService();
+        await updateChatLastTimestamp(chatId, null, 0);
         event.sender.send('onNodeCodeResponse_unloadChat', {
           func: 'unloadChat',
           chatId,
@@ -355,6 +372,11 @@ export function handleRunNodeCode() {
 
       case 'sendMessage': {
         const { chatId, message } = data;
+
+        if (!(await onNewUserMessage(event, message))) {
+          return;
+        }
+
         let chatMessages = await getChatMessages(chatId);
         console.log('Chat messages: ', chatMessages);
         const chatHistory = [];

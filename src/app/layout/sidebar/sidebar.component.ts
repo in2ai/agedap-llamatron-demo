@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { NavLinkComponent } from 'src/app/components/ui/nav-link/nav-link.component';
@@ -21,7 +21,8 @@ export class SidebarComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private appService: AppService,
-    private confirmationService: ConfirmationService
+    private confirmationService: ConfirmationService,
+    private changeDetectorRef: ChangeDetectorRef
   ) {}
 
   public sidebarCollapsed = false;
@@ -49,14 +50,39 @@ export class SidebarComponent implements OnInit, OnDestroy {
     this.router.events.subscribe((event: any) => {
       if (event && event.url) {
         if (event.url.startsWith('/chat/')) {
-          const urlParts = event.url.split('/');
-          if (urlParts.length > 2) {
-            this.currentChatId = urlParts[2]; // Assuming the chat ID is the third part of the URL
+          const nextSlashIndex = event.url.indexOf('/', 6);
+          if (nextSlashIndex !== -1) {
+            this.currentChatId = event.url.substring(6, nextSlashIndex); // Extract chat ID from URL
           } else {
-            this.currentChatId = null; // Reset if the URL does not match
+            this.currentChatId = event.url.substring(6); // Extract chat ID if no next slash
           }
         } else {
           this.currentChatId = null; // Reset if the URL does not match chat route
+        }
+      }
+    });
+
+    this.listenBackgroundChatUpdates();
+  }
+
+  async listenBackgroundChatUpdates() {
+    console.log('Listening for background chat updates...');
+    (window as any).electronAPI.onBackgroundChatUpdated(async (event: any, data: any) => {
+      if (data.func === 'onBackgroundChatUpdated') {
+        await this.loadChats();
+        this.changeDetectorRef.detectChanges(); // Ensure the view updates with new chat data
+      }
+    });
+
+    (window as any).electronAPI.onNotificationClicked(async (event: any, data: any) => {
+      console.log('Notification clicked:', data);
+      if (data.func === 'onNotificationClicked' && data.type && data.type === 'chat') {
+        const chatId = data.chatId;
+        //check if chatId is valid
+        if (chatId && this.chats.some((chat) => chat.id === chatId)) {
+          this.router.navigate(['/chat', chatId]);
+        } else {
+          console.error('Invalid chat ID:', chatId);
         }
       }
     });
@@ -143,5 +169,16 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
   newChat() {
     this.router.navigate(['/config']);
+  }
+
+  getChatIcon(chat: any): string {
+    switch (chat.type) {
+      case 'online':
+        return 'pi-comments';
+      case 'plugin':
+        return 'pi-bolt';
+      default:
+        return 'pi-microchip-ai'; // Default icon if no specific icon is set
+    }
   }
 }
