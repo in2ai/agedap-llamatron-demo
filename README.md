@@ -23,4 +23,8 @@ Pasos:
 4. Conversar
    ![image](https://github.com/user-attachments/assets/d95eda00-f29a-41c5-a5a9-dfeab8eedb0d)
 
+
+<img height="128" alt="XUNTA-2-Axencia-Inn-positivo" src="https://github.com/user-attachments/assets/9e6bec29-66cf-4775-8c45-9243dc06c390" />
+<img height="128" alt="FEDER horizontal castellano" src="https://github.com/user-attachments/assets/e12e0d66-4837-435e-841e-0e52a4aefe8c" />
+
 Este proyecto ha sido subvencionado por la Axencia Galega de Innovación (GAIN) con fondos FEDER de la Unión Europea, con el apoyo de la Consellería de Economía e Industria de la Xunta de Galicia, en el marco de su compromiso con el impulso a la investigación, el desarrollo tecnológico y la innovación.
