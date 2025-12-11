@@ -1,4 +1,6 @@
 import { pipeline } from '@huggingface/transformers';
+import { app } from 'electron';
+import path from 'path';
 
 let weights = {
   skills: 0.5,
@@ -13,7 +15,14 @@ let weights = {
 let extractor = undefined;
 
 async function loadExtractor() {
-  extractor = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2', {
+  const isDev = !app.isPackaged;
+
+  // Ruta al modelo según si estás en dev o prod
+  const modelPath = isDev
+    ? path.join(__dirname, 'models', 'all-MiniLM-L6-v2')
+    : path.join(process.resourcesPath, 'app.asar.unpacked', 'models', 'all-MiniLM-L6-v2');
+
+  extractor = await pipeline('feature-extraction', modelPath, {
     dtype: 'fp32',
   });
 }

@@ -11,6 +11,7 @@ module.exports = {
         '**/node_modules/onnxruntime-common/**',
         '**/node_modules/onnxruntime-node/**',
         '**/node_modules/onnxruntime-web/**',
+        '**/models/**',
       ],
     },
   },

@@ -104,6 +104,12 @@ async function checkWorkOffers(printLookingForWork) {
   let matchedOffersCount = 0;
   chatController.workspace = await updateWorkspace(workspace.id);
 
+  const getSimilarityText = (similarity) => {
+    if (similarity >= 0.4) return 'alta';
+    if (similarity >= 0.3) return 'media';
+    return 'baja';
+  };
+
   for (const workOffer of workOffers) {
     try {
       const response = await computeSimilarity(userCv, workOffer);
@@ -118,7 +124,7 @@ async function checkWorkOffers(printLookingForWork) {
         **Habilidades requeridas:** ${workOffer.requiredSkills.join(', ')}<br/>
         **Ubicación:** ${workOffer.location}<br/>
         **Sueldo:** ${workOffer.price}${workOffer.currency} ${workOffer.period}<br/>
-        **Similitud:** ${similarity.toFixed(2) * 100}%<br/>
+        **Similitud:** ${getSimilarityText(similarity)}<br/>
         <br/><br/>
         **{{object:{
             \"type\": \"workOffer\",
