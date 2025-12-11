@@ -1,4 +1,4 @@
-# Agedap-Llamatron
+# Agedap-Client
 
 Aplicación para la búsqueda de empleo al ofrecer a los usuarios la capacidad de conectar sus perfiles de LinkedIn o Europass, o ingresar manualmente sus datos como un currículum vitae. Todo esto de forma local y nativa en dispositivos móviles y escritorio y conectándose mediante el protocolo Nostr para buscar, filtrar y ver ofertas que las empresas publican en los Relays.
 
