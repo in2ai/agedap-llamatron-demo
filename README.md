@@ -2,6 +2,9 @@
 
 Aplicación para la búsqueda de empleo al ofrecer a los usuarios la capacidad de conectar sus perfiles de LinkedIn o Europass, o ingresar manualmente sus datos como un currículum vitae. Todo esto de forma local y nativa en dispositivos móviles y escritorio y conectándose mediante el protocolo Nostr para buscar, filtrar y ver ofertas que las empresas publican en los Relays.
 
+# Descargar aplicación
+Descarga la última versión que corresponda a tu sistema operativo desde https://github.com/in2ai/agedap-client/releases
+
 # Requisitos
 Tener el dump de Linkedin de nuestro perfil en un archivo zip siguiendo las instrucciones que oferece Linkedin aquí:
 https://www.linkedin.com/help/linkedin/answer/a1339364/downloading-your-account-data?lang=es-ES
